@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Hexo博客搭建Hexo 博客利用 Github Action 自动化部署利用 Github Actions 自动部署 Hexo 博客hexo博客搭建从入门到入土完全优化系列Github Pages+Hexo搭建博客 搭建流程由于Github提供了免费的Page服务，所以就有了Hexo生成站点然后部署在Github Page上的玩法。博客的页面设计、部署等问题可以通过Hexo一键完成，作者只需要关">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo + Github page + Butterfly + Github Action搭建个人博客">
+<meta property="og:url" content="https://antiqueeeee.github.io/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/index.html">
+<meta property="og:site_name" content="提克破事水">
+<meta property="og:description" content="Hexo博客搭建Hexo 博客利用 Github Action 自动化部署利用 Github Actions 自动部署 Hexo 博客hexo博客搭建从入门到入土完全优化系列Github Pages+Hexo搭建博客 搭建流程由于Github提供了免费的Page服务，所以就有了Hexo生成站点然后部署在Github Page上的玩法。博客的页面设计、部署等问题可以通过Hexo一键完成，作者只需要关">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://antiqueeeee.github.io/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/gitBash.png">
+<meta property="og:image" content="https://antiqueeeee.github.io/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%8D%9A%E5%AE%A2-%E4%B8%AA%E4%BA%BA%E8%AE%BE%E7%BD%AE.png">
+<meta property="og:image" content="https://antiqueeeee.github.io/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%8D%9A%E5%AE%A2-SSH%E5%AF%86%E9%92%A5.png">
+<meta property="og:image" content="https://antiqueeeee.github.io/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%8D%9A%E5%AE%A2-%E5%A4%8D%E5%88%B6git%E9%93%BE%E6%8E%A5.png">
+<meta property="og:image" content="https://antiqueeeee.github.io/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%8D%9A%E5%AE%A2-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE.png">
+<meta property="og:image" content="https://antiqueeeee.github.io/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%88%9B%E5%BB%BA%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.png">
+<meta property="og:image" content="https://antiqueeeee.github.io/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%BC%95%E7%94%A8%E8%B5%84%E6%BA%90%E6%96%B9%E5%BC%8F.png">
+<meta property="article:published_time" content="2023-03-23T13:39:34.000Z">
+<meta property="article:modified_time" content="2024-06-24T10:39:03.858Z">
+<meta property="article:author" content="Antique">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://antiqueeeee.github.io/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/gitBash.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://antiqueeeee.github.io/Hexo + Github page + Butterfly + Github Action搭建个人博客/"/>
+
+
+
+
+
+  <title>Hexo + Github page + Butterfly + Github Action搭建个人博客 | 提克破事水</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">提克破事水</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://antiqueeeee.github.io/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="提克破事水">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Hexo + Github page + Butterfly + Github Action搭建个人博客</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2023-03-23T13:39:34+00:00">
+                2023-03-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">博客搭建</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="Hexo + Github page + Butterfly + Github Action搭建个人博客/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a target="_blank" rel="noopener" href="https://zhangshier.vip/posts/41646/">Hexo博客搭建</a><br><a target="_blank" rel="noopener" href="https://zhangshier.vip/posts/8779/#4-3-%E6%96%B9%E6%A1%88%E4%B8%89">Hexo 博客利用 Github Action 自动化部署</a><br><a target="_blank" rel="noopener" href="https://sanonz.github.io/2020/deploy-a-hexo-blog-from-github-actions/">利用 Github Actions 自动部署 Hexo 博客</a><br><a target="_blank" rel="noopener" href="https://space.bilibili.com/372204786/channel/collectiondetail?sid=658132">hexo博客搭建从入门到入土完全优化系列</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34243930/category_9662425.html">Github Pages+Hexo搭建博客</a></p>
+<h2 id="搭建流程"><a href="#搭建流程" class="headerlink" title="搭建流程"></a>搭建流程</h2><p>由于Github提供了免费的Page服务，所以就有了Hexo生成站点然后部署在Github Page上的玩法。博客的页面设计、部署等问题可以通过Hexo一键完成，作者只需要关注文章内容即可。本篇博文只对Windows操作系统的博客搭建过程进行记录，其他需求还请读者自行探索。搭建博客的整体思路是，首先使用Hexo一键生成博客站点，并使用butterfly对站点进行美化。然后，将站点部署到Github page上，即可通过访问[git_user_name].github.io来查看博客内容。接着，单独为博客内容创建一个仓库，使用Github Action监听内容仓库，如果内容仓库中有更新则重新将内容重新部署到博客当中。</p>
+<h2 id="Hexo"><a href="#Hexo" class="headerlink" title="Hexo"></a>Hexo</h2><p>Hexo的安装方法可以直接参考<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/writing">Hexo官方文档</a>，为保证博文结构完整性，将官方文档中的相应步骤抄录至本文中。</p>
+<h3 id="安装前提"><a href="#安装前提" class="headerlink" title="安装前提"></a>安装前提</h3><p>在安装Hexo之前需要先安装下列应用程序：<br><a target="_blank" rel="noopener" href="https://nodejs.org/en">Node.js</a> (Node.js 版本需不低于 10.13，建议使用 Node.js 12.0 及以上版本)<br><a target="_blank" rel="noopener" href="https://git-scm.com/">Git</a><br>两者的安装过程中并无任何特殊配置，只需要点击“下一步”完成安装即可，读者可以根据自身喜好在安装过程中进行相应设置。安装完成后，可以在CMD中通过以下指定，测试是否安装成功。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ node -v</span><br><span class="line">$ npm -v</span><br><span class="line">$ git -v</span><br></pre></td></tr></table></figure>
+
+<p>这里要记录一下node -v的结果，后续配置_config.yml时会使用到。<br>安装必备的应用程序后，需要创建一个空文件夹作为博客的项目路径，接下来我们将称这个创建好的文件夹为<strong>博客项目路径</strong>。进入博客项目路径，空白处点击右键，选择“Git Bash Here”，准备安装搭建博客所需要的工具。</p>
+<h3 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h3><p>Hexo的安装方式相当简单。安装必备的应用程序后，使用 npm 指令安装即可，过程可能需要持续若干分钟。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+<p>安装完毕后，可以在CMD中使用hexo -v指令查看hexo版本以确定是否安装成功。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="建站"><a href="#建站" class="headerlink" title="建站"></a>建站</h2><p>安装阶段结束后开始建站，hexo可以使用init指令生成项目相关文件。</p>
+<img src="/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/gitBash.png" class="" title="git bash">
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo init</span><br></pre></td></tr></table></figure>
+
+<p>执行完毕后，使用hexo s指令就可以在浏览器中输入“localhost:4000”访问博客，看到博客内容。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo s</span><br></pre></td></tr></table></figure>
+
+<h2 id="Butterfly安装及配置"><a href="#Butterfly安装及配置" class="headerlink" title="Butterfly安装及配置"></a>Butterfly安装及配置</h2><p>Butterfly的安装可以直接按照<a target="_blank" rel="noopener" href="https://butterfly.js.org/posts/21cfbf15/#%E5%AE%89%E8%A3%9D">官方文档</a>逐步进行。为保持博文结构完整性，同样将其中的内容摘抄过来，读者可能要注意命令的时效性。<br>首先，进入博客项目路径，呼出Git界面，输入以下命令。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> -b master https://github.com/jerryc127/hexo-theme-butterfly.git themes/butterfly</span><br></pre></td></tr></table></figure>
+
+<p>然后，将博客项目路径中的_config.yml中的[theme]对应的值修改为[butterfly]。<br>安装完成后可以在博客项目路径中看到butterfly文件夹，其中包含了主题的配置文件_config.yml，复制其中的内容，在博客项目路径中创建_config.butterfly.yml，将之前复制的内容粘贴后保存。<br>（使用过程中未能正确配置mathjax，无法渲染公式，所以最后放弃butterfly使用next主题）</p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>如果希望其他人也能看到你的博客，那就需要将博客部署在服务器或Github上。Github完全可以满足笔者对博客的需求，所以并未探索如何将博客部署在服务器上，读者有相关需求可以自行探索。</p>
+<h3 id="创建Github仓库"><a href="#创建Github仓库" class="headerlink" title="创建Github仓库"></a>创建Github仓库</h3><p>创建仓库需要读者已经创建过Github账户，这里不对如何注册Github账户进行赘述。拥有Github账户后，需要在本地配置账户信息。在任意位置唤出git bash，通过以下指令配置用户和邮箱。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name <span class="string">&quot;你的名字&quot;</span></span><br><span class="line">$ git config --global user.email <span class="string">&quot;你的@邮箱.com&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>创建的仓库要求与Github用户名完全相同，并勾选“Add a README file”选项。</p>
+
+
+<h3 id="创建SSH和GPGkeys"><a href="#创建SSH和GPGkeys" class="headerlink" title="创建SSH和GPGkeys"></a>创建SSH和GPGkeys</h3><p>在git bash命令窗口中输入命令生成SSH密钥，命令如下所示，注意-C是大写字母C，邮箱要加引号。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -C <span class="string">&quot;你的@邮箱.com&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>生成的内容可以在路径“C:\用户\用户名.ssh\id_rsa.pub”中查看到，将其中所有内容复制。<br>在Github中打开个人设置页面，左侧选中“SSH and GPG keys”，Title中的内容读者可以任意定义，在Key中粘贴刚刚复制的内容，然后点击“Add SSH key”。</p>
+<img src="/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%8D%9A%E5%AE%A2-%E4%B8%AA%E4%BA%BA%E8%AE%BE%E7%BD%AE.png" class="" title="个人设置">
+<img src="/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%8D%9A%E5%AE%A2-SSH%E5%AF%86%E9%92%A5.png" class="" title="SSH密钥">
+
+<h3 id="开始部署"><a href="#开始部署" class="headerlink" title="开始部署"></a>开始部署</h3><p>在博客的项目路径中唤出git bash窗口，安装部署工具，指令如下所示。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+<p>然后，在github中打开创建好的仓库，复制其git链接，如图所示。</p>
+<img src="/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%8D%9A%E5%AE%A2-%E5%A4%8D%E5%88%B6git%E9%93%BE%E6%8E%A5.png" class="" title="复制git链接">
+<p>然后修改博客项目路径中的“_config.yml”文件，在yml文件中，最下方可以看到“deploy:”，在其下方添加type、repo和branch，填写的内容如图所示。</p>
+<img src="/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%8D%9A%E5%AE%A2-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE.png" class="" title="修改配置文件">
+
+<h3 id="推送至Github"><a href="#推送至Github" class="headerlink" title="推送至Github"></a>推送至Github</h3><p>使用clean指令清除缓存，然后使用g、d指令将博客内容推送至github，期间按照要求输入yes即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ hexo c</span><br><span class="line">$ hexo g</span><br><span class="line">$ hexo d</span><br></pre></td></tr></table></figure>
+
+<p>执行完毕后，即可通过访问“[git_user_name].github.io”直接看到博客内容。<br>上述这种写博文、hexo clean、hexo g、hexo d更新博客的方式是hexo的基础用法。如果读者写博客的场景比较固定，不会涉及到多设备更新博客的话，hexo的基础用法已经足够满足需求了。但是如果写博文的设备并不固定，基础用法就不那么便利了。</p>
+<h2 id="配置Github-Action"><a href="#配置Github-Action" class="headerlink" title="配置Github Action"></a>配置Github Action</h2><p>基础用法每次都会将本地的博文重新部署至github中，“删除文章”这一功能也是通过这种方式实现的，只要在本地删除博文后重新部署即可达到删除博文的目的。换句话说，如果在一个未保存全部博文的设备上更新内容，以往的心血就全被“删除”了。为避免上述情况出现，我们使用Github action来“备份”博客内容。首先，在Github中创建一个私有仓库，用于存储博客内容。然后，在本地编辑博文本，将新内容上传到博客内容仓库中，内容变动时触发Action，将新内容再部署到博客页面中。如果使用新设备撰写博客，只需要git clone博客内容仓库后编辑文本，重新push到仓库中即可。</p>
+<h3 id="创建存放博文内容的私有仓库"><a href="#创建存放博文内容的私有仓库" class="headerlink" title="创建存放博文内容的私有仓库"></a>创建存放博文内容的私有仓库</h3><p>在创建过程中注意勾选private即可。</p>
+<h3 id="创建Token"><a href="#创建Token" class="headerlink" title="创建Token"></a>创建Token</h3><p>访问 Github注意-&gt;右上角头像处-&gt;Settings-&gt;Developer Settings-&gt;Personal access tokens-&gt;generate new token,选择classic token即可，创建的 Token 名称随意，但必须勾选 repo 项 和 workflows 项。</p>
+<img src="/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%88%9B%E5%BB%BA%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93.png" class="" title="创建私有仓库">
+<p>创建好token后<strong>暂时不要关闭页面</strong>，这个token只在此处显示一次，关闭之后就无法找回Token内容。</p>
+<h3 id="配置Github-Action-1"><a href="#配置Github-Action-1" class="headerlink" title="配置Github Action"></a>配置Github Action</h3><ol>
+<li>在本地的博客项目路径中创建[.github]文件夹，在其中创建[workflows]文件夹，在其中创建[autodeploy.yml]文件，其中内容如下：</li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">自动部署</span></span><br><span class="line"><span class="comment"># 当有改动推送到main分支时，启动Action</span></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">main</span></span><br><span class="line">      <span class="comment">#2020年10月后github新建仓库默认分支改为main，注意更改</span></span><br><span class="line">  <span class="attr">release:</span></span><br><span class="line">    <span class="attr">types:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">published</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">检查分支</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">ref:</span> <span class="string">main</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">安装</span> <span class="string">Node</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v1</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="string">&quot;16.x&quot;</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">安装</span> <span class="string">Hexo</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          export TZ=&#x27;Asia/Shanghai&#x27;</span></span><br><span class="line"><span class="string">          npm install hexo-cli -g</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">缓存</span> <span class="string">Hexo</span></span><br><span class="line">        <span class="attr">id:</span> <span class="string">cache-npm</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/cache@v3</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">cache-name:</span> <span class="string">cache-node-modules</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">path:</span> <span class="string">node_modules</span></span><br><span class="line">          <span class="attr">key:</span> <span class="string">$&#123;&#123;</span> <span class="string">runner.os</span> <span class="string">&#125;&#125;-build-$&#123;&#123;</span> <span class="string">env.cache-name</span> <span class="string">&#125;&#125;-$&#123;&#123;</span> <span class="string">hashFiles(&#x27;**/package-lock.json&#x27;)</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">restore-keys:</span> <span class="string">|</span></span><br><span class="line"><span class="string">            $&#123;&#123; runner.os &#125;&#125;-build-$&#123;&#123; env.cache-name &#125;&#125;-</span></span><br><span class="line"><span class="string">            $&#123;&#123; runner.os &#125;&#125;-build-</span></span><br><span class="line"><span class="string">            $&#123;&#123; runner.os &#125;&#125;-</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">安装依赖</span></span><br><span class="line">        <span class="attr">if:</span> <span class="string">$&#123;&#123;</span> <span class="string">steps.cache-npm.outputs.cache-hit</span> <span class="type">!=</span> <span class="string">&#x27;true&#x27;</span> <span class="string">&#125;&#125;</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          npm install --save</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">生成静态文件</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          hexo clean</span></span><br><span class="line"><span class="string">          hexo generate</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">部署到Github</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">JamesIves/github-pages-deploy-action@v4</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">token:</span> <span class="string">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</span></span><br><span class="line">          <span class="attr">repository-name:</span> <span class="string">anzhiyu-a/anzhiyu-a.github.io</span></span><br><span class="line">          <span class="attr">branch:</span> <span class="string">main</span></span><br><span class="line">          <span class="attr">folder:</span> <span class="string">public</span></span><br><span class="line">          <span class="attr">commit-message:</span> <span class="string">&quot;$<span class="template-variable">&#123;&#123; github.event.head_commit.message &#125;&#125;</span> Updated By Github Actions&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>ps:</p>
+<ul>
+<li>注意node.js的版本（node-version）与当前安装的版本一直</li>
+<li>如果配置完成后，push后workflow报错，请参考<a target="_blank" rel="noopener" href="https://isedu.top/index.php/archives/144/#menu_index_9">Github Action配置</a></li>
+</ul>
+<ol start="2">
+<li>在博客项目路径&#x2F;themes&#x2F;butterfly中的[.git]文件夹<strong>删除</strong></li>
+<li>在博客项目路径中呼出Git窗口，运行以下命令</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git init <span class="comment">#初始化</span></span><br><span class="line">git remote add origin git@github.com:[GithubUsername]/[SourceRepo].git <span class="comment">#复制刚创建好的博文内容私有仓库的git链接</span></span><br><span class="line">git checkout -b main <span class="comment"># 切换到main分支，</span></span><br><span class="line"><span class="comment">#2020年10月后github新建仓库默认分支改为main，注意更改</span></span><br><span class="line"><span class="comment"># 如果不是，后面的所有设置的分支记得保持一致</span></span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>运行git提交指令，将博客源码提交到github上。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;github action update&quot;</span></span><br><span class="line">git push origin main</span><br><span class="line"><span class="comment">#2020年10月后github新建仓库默认分支改为main，注意更改</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>此时，博客更新的逻辑就变为，博客项目路径中的内容变动后，会提交至私有博文内容仓库中，内容仓库变动后Github Action会将内容重新部署到github.io仓库中。</p>
+<h2 id="如何使用？"><a href="#如何使用？" class="headerlink" title="如何使用？"></a>如何使用？</h2><p>想要撰写新博客时，打开博客项目路径，唤出git bash窗口，输入new指令创建md文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;博客名&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>提示创建成功后，在生成的md文件中撰写文章，然后git add, git commmit, git push后，重新访问github.io页面即可看到更新内容。</p>
+<h2 id="小tips"><a href="#小tips" class="headerlink" title="小tips"></a>小tips</h2><p>1.post_asset_folder<br>当博文中需要引入图片等资源时，可以将_config.yml中的post_asset_folder参数设置为true。修改配置文件后，hexo new在创建md文件的同时还会为该博文创建一个同名的文件夹，用以存放博文中所需要的资源。<strong>要注意在博文中引入资源的方式</strong>，引入方法如图所示，使用传统的“叹号中括号括号”的引用方式是无效的。</p>
+<img src="/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/%E5%BC%95%E7%94%A8%E8%B5%84%E6%BA%90%E6%96%B9%E5%BC%8F.png" class="" title="引用资源方式">
+
+<p>图片未正常显示，先尝试删除Hexo-asset-image、Hexo-image-link等插件，按照官方文档逐步重新实现图片引用，还是不能正常渲染再参考其它博文。</p>
+<p>查看网页原代码发现图片引用的位置全是.com文件：<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/BNTang/articles/16583413.html">图片显示bug参考</a><br><a target="_blank" rel="noopener" href="https://alvincr.com/2021/01/hexo-with-github_pages/">hexo-asset-image部分</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_43401436/article/details/107191688">hexo博客中插入图片失败——解决思路及个人最终解决办法</a></p>
+<p><a target="_blank" rel="noopener" href="https://wangwei1237.github.io/2020/02/05/handle-the-bug-of-hexo-asset-image-plugin/">解决hexo-asset-image的图片地址错误问题</a></p>
+<p><a target="_blank" rel="noopener" href="https://ucas-yanyang.github.io/Hexo_Notes/hexo_notes/">Notes on Hexo</a></p>
+<p><a target="_blank" rel="noopener" href="https://etrd.org/2017/01/23/hexo%E4%B8%AD%E5%AE%8C%E7%BE%8E%E6%8F%92%E5%85%A5%E6%9C%AC%E5%9C%B0%E5%9B%BE%E7%89%87/">hexo中完美插入本地图片</a></p>
+<p>2.创建类别、标签<br>网上很多<a target="_blank" rel="noopener" href="https://victoryofymk.github.io/2018/10/23/Hexo%E5%88%9B%E5%BB%BA%E5%88%86%E7%B1%BB%E9%A1%B5%E9%9D%A2/">hexo创建类别的教程</a>，笔者在最开始创建分类时陷入了一个误区，就是觉得要“先生成一个类别，然后在博文中才可以设置为这个类别”，其实不是。<br>实际上只要<strong>按照教程操作之后</strong>，你就<strong>可以任意的为你的博文添加类别了</strong>，hexo new page categories更“像是”允许作者为博文添加类别的开关。<br>3.引用历史博文<br>详见<a target="_blank" rel="noopener" href="https://xfdj.github.io/2020/05/12/%E5%A6%82%E4%BD%95%E5%9C%A8Hexo%E7%9A%84%E5%8D%9A%E6%96%87%E4%B8%AD%E5%BC%95%E7%94%A8%E8%87%AA%E5%B7%B1%E7%9A%84%E6%96%87%E7%AB%A0/">如何在Hexo的博文中引用自己的文章</a>，要注意中间写的是文件名，不是博文title名。<br>4.博文分页<br>当按类别访问博文且该类别博文数量较多时，Hexo会根据博客数量进行分页，默认一页内摆放十篇博文，可以在_config.yml中的per_page属性进行修改。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/" rel="next" title="损失函数">
+                <i class="fa fa-chevron-left"></i> 损失函数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Git%E4%BD%BF%E7%94%A8/" rel="prev" title="Git使用">
+                Git使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">77</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">搭建流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo"><span class="nav-number">2.</span> <span class="nav-text">Hexo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E5%89%8D%E6%8F%90"><span class="nav-number">2.1.</span> <span class="nav-text">安装前提</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Hexo"><span class="nav-number">2.2.</span> <span class="nav-text">安装Hexo</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E7%AB%99"><span class="nav-number">3.</span> <span class="nav-text">建站</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Butterfly%E5%AE%89%E8%A3%85%E5%8F%8A%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">Butterfly安装及配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2"><span class="nav-number">5.</span> <span class="nav-text">部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAGithub%E4%BB%93%E5%BA%93"><span class="nav-number">5.1.</span> <span class="nav-text">创建Github仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BASSH%E5%92%8CGPGkeys"><span class="nav-number">5.2.</span> <span class="nav-text">创建SSH和GPGkeys</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E9%83%A8%E7%BD%B2"><span class="nav-number">5.3.</span> <span class="nav-text">开始部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E9%80%81%E8%87%B3Github"><span class="nav-number">5.4.</span> <span class="nav-text">推送至Github</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEGithub-Action"><span class="nav-number">6.</span> <span class="nav-text">配置Github Action</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%AD%98%E6%94%BE%E5%8D%9A%E6%96%87%E5%86%85%E5%AE%B9%E7%9A%84%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93"><span class="nav-number">6.1.</span> <span class="nav-text">创建存放博文内容的私有仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAToken"><span class="nav-number">6.2.</span> <span class="nav-text">创建Token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEGithub-Action-1"><span class="nav-number">6.3.</span> <span class="nav-text">配置Github Action</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%EF%BC%9F"><span class="nav-number">8.</span> <span class="nav-text">如何使用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8Ftips"><span class="nav-number">9.</span> <span class="nav-text">小tips</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Antique</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://Antique.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://antiqueeeee.github.io/Hexo%20+%20Github%20page%20+%20Butterfly%20+%20Github%20Action%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/';
+          this.page.identifier = 'Hexo + Github page + Butterfly + Github Action搭建个人博客/';
+          this.page.title = 'Hexo + Github page + Butterfly + Github Action搭建个人博客';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://Antique.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

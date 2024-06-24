@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="生成式模型," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="目前，生成式任务中模型的解码策略有五种，分别为：贪心搜索（Greedy Search）、束搜索（Beam Search）、top-k、top-p、随机采样。 贪心搜索在t时刻中，选取当前概率最大的词。  这种采样方式只考虑当前时刻的最优解，忽略了当前低概率词后面的高概率词。 1234567891011# 代码来自perplexity.aidef greedy_search(model, devic">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生成式模型解码策略">
+<meta property="og:url" content="https://antiqueeeee.github.io/%E7%94%9F%E6%88%90%E5%BC%8F%E6%A8%A1%E5%9E%8B%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5/index.html">
+<meta property="og:site_name" content="提克破事水">
+<meta property="og:description" content="目前，生成式任务中模型的解码策略有五种，分别为：贪心搜索（Greedy Search）、束搜索（Beam Search）、top-k、top-p、随机采样。 贪心搜索在t时刻中，选取当前概率最大的词。  这种采样方式只考虑当前时刻的最优解，忽略了当前低概率词后面的高概率词。 1234567891011# 代码来自perplexity.aidef greedy_search(model, devic">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://antiqueeeee.github.io/%E7%94%9F%E6%88%90%E5%BC%8F%E6%A8%A1%E5%9E%8B%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5/greedy.png">
+<meta property="article:published_time" content="2023-04-20T10:07:37.000Z">
+<meta property="article:modified_time" content="2024-06-24T10:39:03.890Z">
+<meta property="article:author" content="Antique">
+<meta property="article:tag" content="生成式模型">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://antiqueeeee.github.io/%E7%94%9F%E6%88%90%E5%BC%8F%E6%A8%A1%E5%9E%8B%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5/greedy.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://antiqueeeee.github.io/生成式模型解码策略/"/>
+
+
+
+
+
+  <title>生成式模型解码策略 | 提克破事水</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">提克破事水</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://antiqueeeee.github.io/%E7%94%9F%E6%88%90%E5%BC%8F%E6%A8%A1%E5%9E%8B%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="提克破事水">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">生成式模型解码策略</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2023-04-20T10:07:37+00:00">
+                2023-04-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/%E7%94%9F%E6%88%90%E5%BC%8F%E6%A8%A1%E5%9E%8B%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="生成式模型解码策略/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>目前，生成式任务中模型的解码策略有五种，分别为：贪心搜索（Greedy Search）、束搜索（Beam Search）、top-k、top-p、随机采样。</p>
+<h2 id="贪心搜索"><a href="#贪心搜索" class="headerlink" title="贪心搜索"></a>贪心搜索</h2><p>在t时刻中，选取当前概率最大的词。</p>
+<img src="/%E7%94%9F%E6%88%90%E5%BC%8F%E6%A8%A1%E5%9E%8B%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5/greedy.png" class="" title="greedy">
+<p>这种采样方式只考虑当前时刻的最优解，忽略了当前低概率词后面的高概率词。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 代码来自perplexity.ai</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">greedy_search</span>(<span class="params">model, device, tokenizer, start_text, length</span>):</span><br><span class="line">    input_ids = tokenizer.encode(start_text, return_tensors=<span class="string">&#x27;pt&#x27;</span>).to(device)</span><br><span class="line">    model.<span class="built_in">eval</span>()</span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(length):</span><br><span class="line">            outputs = model(input_ids)</span><br><span class="line">            logits = outputs.logits[:, -<span class="number">1</span>, :]</span><br><span class="line">            next_token = torch.argmax(logits, dim=-<span class="number">1</span>)</span><br><span class="line">            input_ids = torch.cat([input_ids, next_token.unsqueeze(-<span class="number">1</span>)], dim=-<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> tokenizer.decode(input_ids, skip_special_tokens=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="束搜索"><a href="#束搜索" class="headerlink" title="束搜索"></a>束搜索</h2><p>束搜索以句子为单位，返回可能性最大的输出序列列表。<br>每一步解码时，仅保留前K个可能的结果。例如在第一步解码时，我们选择前K个可能的y，分别代入第二步解码中，各取前k个候选词，即得到k^2个候选组合，最后保留概率乘积最大的前k个候选结果。<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_27590277/article/details/107853325">Transformers中的Beam Search高效实现</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/nickchen121/p/15499576.html">Beam Search快速理解及代码解析</a><br><a target="_blank" rel="noopener" href="https://lowin.li/2021/11/08/transformers-cang-ku-zuo-yu-yan-sheng-cheng-de-jie-ma-fang-fa-jie-shao/">Transformers仓库做语言生成的解码方法介绍</a><br><a target="_blank" rel="noopener" href="https://posts.careerengine.us/p/62c3109d822e5f3cf668fe40">使用Transformers做限制集束搜索（Constrained Beam Search）的文本生成</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#代码来自perplexity.ai</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">beam_search</span>(<span class="params">model, device, tokenizer, start_text, length, beam_size=<span class="number">5</span></span>):</span><br><span class="line">    input_ids = tokenizer.encode(start_text, return_tensors=<span class="string">&#x27;pt&#x27;</span>).to(device)</span><br><span class="line">    model.<span class="built_in">eval</span>()</span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="comment"># 计算初始状态的logits和隐状态</span></span><br><span class="line">        outputs = model(input_ids)</span><br><span class="line">        logits = outputs.logits[:, -<span class="number">1</span>, :]</span><br><span class="line">        probs = F.softmax(logits, dim=-<span class="number">1</span>)</span><br><span class="line">        topk_probs, topk_indices = torch.topk(probs, beam_size, dim=-<span class="number">1</span>)</span><br><span class="line">        topk_log_probs = torch.log(topk_probs)</span><br><span class="line">        topk_inputs = torch.ones((<span class="number">1</span>, beam_size), dtype=torch.long, device=device) * input_ids[<span class="number">0</span>, -<span class="number">1</span>]</span><br><span class="line">        topk_outputs = topk_inputs</span><br><span class="line">        topk_scores = topk_log_probs</span><br><span class="line">        topk_hidden = outputs.hidden</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 逐步生成文本</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, length):</span><br><span class="line">            all_outputs = []</span><br><span class="line">            all_scores = []</span><br><span class="line">            all_hidden = []</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(beam_size):</span><br><span class="line">                input_ids = torch.cat([input_ids, topk_inputs[:, j].unsqueeze(-<span class="number">1</span>)], dim=-<span class="number">1</span>)</span><br><span class="line">                outputs = model(input_ids, topk_hidden)</span><br><span class="line">                logits = outputs.logits[:, -<span class="number">1</span>, :]</span><br><span class="line">                probs = F.softmax(logits, dim=-<span class="number">1</span>)</span><br><span class="line">                scores = topk_scores[:, j].unsqueeze(-<span class="number">1</span>) + torch.log(probs)</span><br><span class="line">                scores = scores.view(-<span class="number">1</span>)</span><br><span class="line">                topk_scores, topk_indices = torch.topk(scores, beam_size)</span><br><span class="line">                topk_probs = torch.exp(topk_scores)</span><br><span class="line">                topk_inputs = topk_indices % probs.shape[-<span class="number">1</span>]</span><br><span class="line">                topk_outputs = torch.cat([topk_outputs[:, j].unsqueeze(-<span class="number">1</span>), topk_inputs.unsqueeze(-<span class="number">1</span>)], dim=-<span class="number">1</span>)</span><br><span class="line">                topk_hidden = outputs.hidden</span><br><span class="line">                all_outputs.append(topk_outputs)</span><br><span class="line">                all_scores.append(topk_scores)</span><br><span class="line">                all_hidden.append(topk_hidden)</span><br><span class="line">            topk_outputs = torch.cat(all_outputs, dim=<span class="number">1</span>)</span><br><span class="line">            topk_scores = torch.cat(all_scores, dim=<span class="number">1</span>)</span><br><span class="line">            topk_hidden = torch.cat(all_hidden, dim=<span class="number">1</span>)</span><br><span class="line">        best_output = topk_outputs[:, <span class="number">0</span>]</span><br><span class="line">    <span class="keyword">return</span> tokenizer.decode(best_output, skip_special_tokens=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="top-k"><a href="#top-k" class="headerlink" title="top-k"></a>top-k</h2><p>top-k是对贪心搜索策略的优化，从其排名前k的token中进行采样。对于每个时刻t，首先筛选出k个备选token，重新计算这K个token的概率值，然后使用multinomial方法进行采样，采样时会优先取概率高的值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#代码来自perplexity.ai，不知道是否正确。</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">top_k_sampling</span>(<span class="params">logits, k</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    对logits进行top-k采样</span></span><br><span class="line"><span class="string">    :param logits: 模型输出的logits，​​形状为[batch_size, vocab_size]</span></span><br><span class="line"><span class="string">    :param k: 采样的候选项个数</span></span><br><span class="line"><span class="string">    :return: 采样结果，​​形状为[batch_size]</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    batch_size, vocab_size = logits.shape</span><br><span class="line">    top_k_logits, top_k_indices = torch.topk(logits, k=k, dim=-<span class="number">1</span>)</span><br><span class="line">    top_k_probs = torch.nn.functional.softmax(top_k_logits, dim=-<span class="number">1</span>)</span><br><span class="line">    top_k_probs /= torch.<span class="built_in">sum</span>(top_k_probs, dim=-<span class="number">1</span>, keepdim=<span class="literal">True</span>)</span><br><span class="line">    top_k_samples = torch.multinomial(top_k_probs, num_samples=<span class="number">1</span>)</span><br><span class="line">    samples = torch.gather(top_k_samples, dim=-<span class="number">1</span>, index=top_k_indices)</span><br><span class="line">    samples = torch.squeeze(samples, dim=-<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> samples</span><br></pre></td></tr></table></figure>
+<p><strong>torch.multinomial(input, num_samples, replacement&#x3D;False)</strong><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/382187211">torch.multinominal</a>方法可以根据给定权重对数组进行多次采样，返回采样后的元素下标。</p>
+<ul>
+<li>参数说明<br>input: 必须是torch.Tensor类型，即概率分布。可以是一维或者二维，不必手动归一化。<br>num_samples：采样的次数。如果input是二维的，则表示每行的采样次数。<br>replacement: 采样是否放回。默认为False，即不放回采样，此时num_samples必须小于input中的非零元素。在无放回采样中，input中值为0的元素只有所有其他元素被抽到后，才会被抽到。换句话说，有放回情况下，概率为0的元素永远不会被采样到。</li>
+<li>按概率采样<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">weights = torch.Tensor([<span class="number">0.2</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.3</span>])</span><br><span class="line">torch.multinomial(weights,<span class="number">2</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>tensor([<span class="number">3</span>,<span class="number">2</span>])</span><br></pre></td></tr></table></figure></li>
+<li>按频率采样<br>multinomial()函数的input可以是大于1的数，在函数内部会再次进行归一化。例如在处理文本对word进行采样时，直接传入词典中每个词的词频就好了，不需要搜东归一化。<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">weights = torch.Tensor([<span class="number">3</span>, <span class="number">2</span>, <span class="number">7</span>, <span class="number">8</span>])</span><br><span class="line">torch.multinomial(weights, <span class="number">2</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>tensor([<span class="number">3</span>, <span class="number">1</span>])</span><br></pre></td></tr></table></figure></li>
+<li>有放回采样<br>采样结果可重复出现，需要将replacement&#x3D;True。<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">weights = torch.Tensor([<span class="number">0</span>, <span class="number">0.3</span>, <span class="number">0.7</span>])</span><br><span class="line">torch.multinomial(weights, <span class="number">10</span>, replacement=<span class="literal">True</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>tensor([<span class="number">2</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">1</span>])</span><br></pre></td></tr></table></figure></li>
+<li>多行同时进行采样<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">传入的<span class="built_in">input</span>可以是<span class="number">2</span>维矩阵，此时会分别对每一行按各自的权重进行采样：</span><br><span class="line">weights = torch.Tensor([</span><br><span class="line">    [<span class="number">0</span>, <span class="number">0.3</span>, <span class="number">0.7</span>], </span><br><span class="line">    [<span class="number">0.3</span>, <span class="number">0.7</span>, <span class="number">0</span>]</span><br><span class="line">])</span><br><span class="line">torch.multinomial(weights, <span class="number">2</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>tensor([[<span class="number">2</span>, <span class="number">1</span>],</span><br><span class="line">            [<span class="number">1</span>, <span class="number">0</span>]])</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="top-p"><a href="#top-p" class="headerlink" title="top-p"></a>top-p</h2><p>由于top-k采样方式中很难觉得k值应该取多少，于是出现动态设置token候选列表大小的策略，即核采样（Nucleus Sampling）。在每个时间步中，解码词的概率分布中，头部几个词的出现概率已经占据了绝大部分概率空间，这部分词被称为nucleus。<br>具体做法是，在每个时间步中，对当前token的概率分布进行排序，并给定一个阈值P，在候选词中概率最高的词开始累积求和，使得他们出现的概率和大于等于p，即可得到一新的候选词集合V_p，然后再对V_p做一次re-scaling，再进行采样。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 代码来自perplexity.ai 未必正确。</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">top_p_sampling</span>(<span class="params">logits, p=<span class="number">0.9</span></span>):</span><br><span class="line">    sorted_logits, sorted_indices = torch.sort(logits, descending=<span class="literal">True</span>)</span><br><span class="line">    cumulative_probs = torch.cumsum(torch.softmax(sorted_logits, dim=-<span class="number">1</span>), dim=-<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Remove tokens with cumulative probability above the threshold</span></span><br><span class="line">    sorted_indices_to_remove = cumulative_probs &gt; p</span><br><span class="line">    <span class="comment"># Shift the indices to the right to keep the first token above the threshold</span></span><br><span class="line">    sorted_indices_to_remove[..., <span class="number">1</span>:] = sorted_indices_to_remove[..., :-<span class="number">1</span>].clone()</span><br><span class="line">    sorted_indices_to_remove[..., <span class="number">0</span>] = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Scatter sorted tensors to original indexing</span></span><br><span class="line">    indices_to_remove = sorted_indices[sorted_indices_to_remove]</span><br><span class="line">    logits[indices_to_remove] = <span class="built_in">float</span>(<span class="string">&#x27;-inf&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> torch.multinomial(torch.softmax(logits, dim=-<span class="number">1</span>), <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Example usage</span></span><br><span class="line">logits = torch.randn(<span class="number">1</span>, <span class="number">10</span>)</span><br><span class="line">sampled_token = top_p_sampling(logits, p=<span class="number">0.8</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="temperature温度采样"><a href="#temperature温度采样" class="headerlink" title="temperature温度采样"></a>temperature温度采样</h2><p>在概率模型中，logits扮演着能量的角色，可以通过将logits除以温度来实现温度采样，然后将其输入Softmax并获得采样概率，就是直接re-scale原有的概率分布，温度越低（&lt;1）会使模型倾向于高频token，而高于1的温度，则会缩小高频词和低频词之间的差距。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">sample</span>(<span class="params">model, device, tokenizer, start_text, length, temperature=<span class="number">1.0</span></span>):</span><br><span class="line">    input_ids = tokenizer.encode(start_text, return_tensors=<span class="string">&#x27;pt&#x27;</span>).to(device)</span><br><span class="line">    model.<span class="built_in">eval</span>()</span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(length):</span><br><span class="line">            outputs = model(input_ids)</span><br><span class="line">            logits = outputs.logits[:, -<span class="number">1</span>, :] / temperature</span><br><span class="line">            probs = F.softmax(logits, dim=-<span class="number">1</span>)</span><br><span class="line">            next_token = torch.multinomial(probs, num_samples=<span class="number">1</span>)</span><br><span class="line">            input_ids = torch.cat([input_ids, next_token], dim=-<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> tokenizer.decode(input_ids, skip_special_tokens=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E7%94%9F%E6%88%90%E5%BC%8F%E6%A8%A1%E5%9E%8B/" rel="tag"># 生成式模型</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/%E4%BB%BB%E5%8A%A1%E5%9E%8B%E5%AF%B9%E8%AF%9D%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%9A%84%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E7%94%9F%E6%88%90%E7%A0%94%E7%A9%B6%E8%BF%9B%E5%B1%95%E7%BB%BC%E8%BF%B0/" rel="next" title="论文浅读-任务型对话系统中的自然语言生成研究进展综述">
+                <i class="fa fa-chevron-left"></i> 论文浅读-任务型对话系统中的自然语言生成研究进展综述
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/step-into-transformers/" rel="prev" title="step-into-transformers">
+                step-into-transformers <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">77</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%AA%E5%BF%83%E6%90%9C%E7%B4%A2"><span class="nav-number">1.</span> <span class="nav-text">贪心搜索</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%9F%E6%90%9C%E7%B4%A2"><span class="nav-number">2.</span> <span class="nav-text">束搜索</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#top-k"><span class="nav-number">3.</span> <span class="nav-text">top-k</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#top-p"><span class="nav-number">4.</span> <span class="nav-text">top-p</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#temperature%E6%B8%A9%E5%BA%A6%E9%87%87%E6%A0%B7"><span class="nav-number">5.</span> <span class="nav-text">temperature温度采样</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Antique</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://Antique.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://antiqueeeee.github.io/%E7%94%9F%E6%88%90%E5%BC%8F%E6%A8%A1%E5%9E%8B%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5/';
+          this.page.identifier = '生成式模型解码策略/';
+          this.page.title = '生成式模型解码策略';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://Antique.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

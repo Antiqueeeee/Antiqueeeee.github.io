@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="EVA2.0：Investigating Open-Domain Chinese Dialogue Systems with Large-Scale Pre-Training摘要在本文中，我们进行了广泛的实验来调查这些未被充分探索的因素，包括数据质量控制、模型架构设计、训练方法和解码策略。我们提出了EVA2.0，一个具有28亿个参数的大规模预训练开放域中文对话模型，并将我们的模型和代码公开。据我们">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于大规模预训练开放域中文对话系统关键技术研究">
+<meta property="og:url" content="https://antiqueeeee.github.io/%E5%9F%BA%E4%BA%8E%E5%A4%A7%E8%A7%84%E6%A8%A1%E9%A2%84%E8%AE%AD%E7%BB%83%E5%BC%80%E6%94%BE%E5%9F%9F%E4%B8%AD%E6%96%87%E5%AF%B9%E8%AF%9D%E7%B3%BB%E7%BB%9F%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6/index.html">
+<meta property="og:site_name" content="提克破事水">
+<meta property="og:description" content="EVA2.0：Investigating Open-Domain Chinese Dialogue Systems with Large-Scale Pre-Training摘要在本文中，我们进行了广泛的实验来调查这些未被充分探索的因素，包括数据质量控制、模型架构设计、训练方法和解码策略。我们提出了EVA2.0，一个具有28亿个参数的大规模预训练开放域中文对话模型，并将我们的模型和代码公开。据我们">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-04-23T14:45:17.000Z">
+<meta property="article:modified_time" content="2024-06-24T10:39:03.890Z">
+<meta property="article:author" content="Antique">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://antiqueeeee.github.io/基于大规模预训练开放域中文对话系统关键技术研究/"/>
+
+
+
+
+
+  <title>基于大规模预训练开放域中文对话系统关键技术研究 | 提克破事水</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">提克破事水</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://antiqueeeee.github.io/%E5%9F%BA%E4%BA%8E%E5%A4%A7%E8%A7%84%E6%A8%A1%E9%A2%84%E8%AE%AD%E7%BB%83%E5%BC%80%E6%94%BE%E5%9F%9F%E4%B8%AD%E6%96%87%E5%AF%B9%E8%AF%9D%E7%B3%BB%E7%BB%9F%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="提克破事水">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基于大规模预训练开放域中文对话系统关键技术研究</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2023-04-23T14:45:17+00:00">
+                2023-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BA%E6%96%87%E6%B5%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">论文浅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/%E5%9F%BA%E4%BA%8E%E5%A4%A7%E8%A7%84%E6%A8%A1%E9%A2%84%E8%AE%AD%E7%BB%83%E5%BC%80%E6%94%BE%E5%9F%9F%E4%B8%AD%E6%96%87%E5%AF%B9%E8%AF%9D%E7%B3%BB%E7%BB%9F%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="基于大规模预训练开放域中文对话系统关键技术研究/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="EVA2-0：Investigating-Open-Domain-Chinese-Dialogue-Systems-with-Large-Scale-Pre-Training"><a href="#EVA2-0：Investigating-Open-Domain-Chinese-Dialogue-Systems-with-Large-Scale-Pre-Training" class="headerlink" title="EVA2.0：Investigating Open-Domain Chinese Dialogue Systems with Large-Scale Pre-Training"></a>EVA2.0：Investigating Open-Domain Chinese Dialogue Systems with Large-Scale Pre-Training</h1><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>在本文中，我们进行了广泛的实验来调查这些未被充分探索的因素，包括数据质量控制、模型架构设计、训练方法和解码策略。我们提出了EVA2.0，一个具有28亿个参数的大规模预训练开放域中文对话模型，并将我们的模型和代码公开。据我们所知，EVA2.0是最大的开源中文对话模型。自动和人工评估表明，我们的模型明显优于其他开源模型。我们还通过列举一些失效案例来讨论这项工作的局限性，并提出一些未来的方向。</p>
+<h2 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h2><p>预训练对话模型可以从大规模语料中或缺通用的对话技巧和各种各样的知识，在下游任务中微调这些模型通常要比自行训练的模型效果更好。但是并非增加模型参数和增加训练语料就可以构建出一个出色的对话模型，其中还涉及到其他因素，比如<strong>预训练任务、解码策略、评估指标</strong>等，可能还有其他影响对话模型性能的因素尚未发现。目前出现的许多工作都未提供数据收集、数据处理过程和数据质量控制、解码策略等相关细节。通常都只是给出粗略的参数分析。<br>因此，本文就如何构建基于大规模预培训的开放域汉语对话系统进行了研究。我们对训练前语料库进行了详细的分析，并对模型设计、训练前方法和解码策略进行了广泛的实验。首先，我们全面分析了最大的中文对话数据集WDC-Dialogue的质量。我们发现，尽管该数据集规模庞大，但在上下文-响应相关性、语言流利性和领域多样性等方面存在严重问题。其次，我们探讨模型架构、预训练方法和解码策略的几种变体。我们的经验发现，这些因素确实对训练前的模型有一个非平凡的影响。<br>综合所有这些，我们首先设计了一个数据清理管道，并构建了用于大规模预训练的60GB高质量对话数据集。在此基础上，构建了参数为2.8B的开放域对话模型EVA2.0，以及参数为300M和970M的两种变体。在自动和人工评估中，2.8B EVA2.0模型显著优于其他开源生成对话模型。我们注意到，即使是300M型在自动评估中表现与EVA1.0模型相当，而只需要11%的参数。本文还通过案例分析，从不同角度分析了EVA2.0的会话能力，为未来大规模预训练开放域汉语对话系统的研究提供参考。我们的工作为汉语对话模式的研究提供了基础模型，我们相信这将极大地造福于对话研究界。</p>
+<h2 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2 相关工作"></a>2 相关工作</h2><p><strong>大规模预训练语言模型</strong><br>迄今为止，已经出现了GPT\BERT\XLNET\BART\ROBERTA\CPM\PANGU\YUAN\MENGZI\ERNIE等大规模语言模型。<br><strong>预训练对话模型</strong><br>除了一般的语言理解和生成，会话前培训也越来越受到关注。比如DialoGPT\LaMDA\CDial-GPT\PLATO\EVA1.0<br>然而，这些作品大多都没有涉及到如何构建对话模型的细节。在本文中，除了最终的模型评估外，我们还关注了大规模的预先训练的汉语对话模型的关键配方。</p>
+<h2 id="3-数据"><a href="#3-数据" class="headerlink" title="3 数据"></a>3 数据</h2><p>在大规模的预训练中，数据从本质上影响模型的表现和行为。在本节中，我们定义了几个自动的数据质量评价指标，综合衡量从社交媒体获得的对话前训练语料库的相关性、流畅性和领域多样性。然后，我们使用这些指标来分析WDC-Dialogue (Zhou et al.， 2021)，发现尽管WDC-Dialogue规模很大，但存在着上下文-响应相关性、语言流利性和领域多样性等严重问题。最后，在WDC-Dialogue的基础上，设计了一个更好的数据处理管道来构建EVA2.0的预训练数据。</p>
+<h3 id="3-1-数据质量评估"><a href="#3-1-数据质量评估" class="headerlink" title="3.1 数据质量评估"></a>3.1 数据质量评估</h3><p><strong>Relevance Score</strong><br>语境与反应之间的关联分数是反映对话连贯性和参与性的重要指标。我们<strong>采用未经训练和训练过的度量标准</strong>来度量我们数据集的相关性。<br>对于未经训练的度量，我们计算上下文和响应之间的词覆盖率作为相关性的一个方面。此外，我们对一个会话中重叠单词间隔越远的数据样本给予更高的分数，以显示对长依赖属性的偏好。在形式上，上下文(C)和反应(R)的关联得分被定义为<br>$$S_1 &#x3D; \sum_(w_i\in C,w_j\inR)dist(w_i,w_j)^T I(w_i&#x3D;w_j)$$<br>其中，dist(w_i,w_j)表示包含wi和wj的话语之间的索引距离。使用T来调整分数。<br>训练过的指标，使用LCCC数据集微调了一个BERT-BASE的二进制分类器，来识别回复与上下文之间是否“合适”。在评价中，我们使用“适当”的分类概率作为关联得分:<br>$$S_2 &#x3D; log p(1|C,R)$$<br>与依赖于精确重叠的未训练度量相比，训练后的度量更好地估计了语义相关性。<br><strong>Fluency Score</strong><br>我们使用基于<a target="_blank" rel="noopener" href="https://github.com/kpu/kenlm">kenlm</a>的统计模型计算数据集中每个句子的概率。对话会话中句子的平均流利度得分被定义为<br>$$S_3 &#x3D; - \frac{1}{n}\sum_(i&lt;&#x3D;n&gt;)logP(w_1^i,w_2^i,\cdots,w_(|u_i|)^i)$$<br>其中n是会话的话语数，UI &#x3D; wi 1wi 2, wi∣UI∣是第i个话语。<br><strong>Entertainment Tendency</strong><br>中国的社交媒体平台上有很多关于娱乐明星和粉丝的不受欢迎的信息交流，这些在日常对话中是不常见的。因此，我们计算中国明星的对话比例来衡量娱乐倾向。这也在一定程度上反映了数据集的领域多样性。</p>
+<h3 id="3-2-数据过滤"><a href="#3-2-数据过滤" class="headerlink" title="3.2 数据过滤"></a>3.2 数据过滤</h3><p><strong>Dataset-level Filtering</strong><br>我们发现一些数据集不适合开放领域的对话。对他们的培训将导致不受欢迎的行为，如电子商务客户服务的基调。因此，我们将JDDC (Chen et al.， 2020)这样的数据集从WDC-Dialogue中删除。<br><strong>Context-level Filtering</strong><br>由于我们的数据集主要来自社交媒体平台，一些上下文对应着相当数量的回复(例如，微博帖子及其评论)。这些回复在格式上非常相似，<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2107.06499">可能会严重损害语言模型的表现</a>。因此，在过滤过程中，我们为每个上下文设置了一个最大回复数。<br><strong>Rule-based Filtering</strong><br>我们在<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2108.01547">EVA1.0</a>中加强了基于规则的过滤程序。例如，将繁体字转换为简体字，去除不合理的多个连续标点符号，简化黑名单，以避免对一些常见的一词多义现象过于敏感。<br><strong>Classiﬁer-based Filtering</strong><br>对于语料库中的每一个对话，我们计算上述定义的相关度和流利度得分，并过滤掉得分低于阈值的样本。一个会话的总分定义为S &#x3D; αS1 + βS2 + γS3。在实践中，我们根据经验为不同的数据源选择不同的阈值，以适应其数据分布，使最终的数据集均衡。</p>
+<h3 id="3-3-数据扩展"><a href="#3-3-数据扩展" class="headerlink" title="3.3 数据扩展"></a>3.3 数据扩展</h3><p>社交媒体与开放领域对话之间的分布必然存在差距。例如，流行语在网络上很流行，但在日常对话中却很少见。为了消除我们的数据集的偏见并增加其领域多样性，我们从额外的公共来源中收集了四种类型的数据:<br>(1)从电影或电视剧字幕中提取的对话3 (Lison和Tiedemann, 2016);<br>(2)从小说和故事中提取的对话(Guan等人，2021);<br>(3)知道问答组4;<br>(4)现有众包语料库，包括DuConv (Wu et al.， 2019)、KdConv (Zhou et al.， 2020)、DuRecDial (Liu et al.， 2020)和NaturalConv (Wang et al.， 2021b)。<br>这些额外的数据占整个训练前语料库的12GB。</p>
+<h3 id="3-4-数据统计"><a href="#3-4-数据统计" class="headerlink" title="3.4 数据统计"></a>3.4 数据统计</h3><p>我们使用上述数据处理管道构建最终的eva2.0数据集。在表1中，我们展示了使用3.1节定义的指标对我们的eva2.0数据集和WDC-Dialogue (Zhou et al.， 2021)进行的基本统计数据和质量评估。我们可以看到，虽然eva2.0数据集的数量不到原始WDCDialogue的三分之一，但它的质量明显更好。这意味着我们的数据细化过程提高了上下文和响应之间的相关性、语言的流畅性，并减少了娱乐领域的对话比例。此外，每个会话的平均话语数也增加了，使得训练样本更接近每日多回合对话。从5.3节的实验中我们可以看到，eva2.0数据集虽然数量少，但由于数据质量高，模型性能更好。</p>
+<h2 id="4-方法"><a href="#4-方法" class="headerlink" title="4 方法"></a>4 方法</h2><h3 id="4-1模型"><a href="#4-1模型" class="headerlink" title="4.1模型"></a>4.1模型</h3><p>我们采用基于变压器的架构，结合双向编码器和单向解码器进行对话建模。与EVA1.0和T5不同，我们在Transformer的注意力机制中增加了√d归一化，减少了在预训练前仔细初始化的需求。对话历史作为上下文输入编码器，解码器根据所编码的上下文以自回归的方式产生响应。<br><strong>Layer Numbers</strong><br>Blender和Meena都采用了编码器-解码器架构来建模对话。然而，不同于在长文档上预训练的模型，后者通常使用平衡的编码器和解码器层(Lewis et al.， 2020a;Raffel等人，2020)，这些对话模型使用的解码器比编码器深入得多。直观地说，更深层次的解码器可能有利于生成任务。而更深层次的编码器可以更好地理解对话建模中的对话历史，从而提高了相关性以及产生的反应和对话语境之间的一致性。因此，我们在保持相同参数数的情况下，尝试不同的编码器和解码器层比。<br><strong>Role Information</strong><br>目前的预先训练的对话模型可能会混淆它们在长对话中的角色，因为该模型是在社交媒体的近于对话中预先训练的。因此，可以直观地将角色信息添加到对话模型中，以提高角色一致性。例如，Plato-XL (Bao et al.， 2021b)引入角色嵌入来编码多方对话。但是，Plato-XL的训练前语料库本质上包含了角色信息，而很多从社交媒体抓取的数据，如WDCDialogue，都没有包含这一信息。虽然我们可以假设数据是两方对话，并将角色信息添加到输入中，但这种近似是否有效尚不清楚。因此，我们跟随Wang et al.(2020)使用角色标识符符号和角色嵌入作为角色信息，并测试其效果。</p>
+<h3 id="4-2预训练"><a href="#4-2预训练" class="headerlink" title="4.2预训练"></a>4.2预训练</h3><p>我们使用<a target="_blank" rel="noopener" href="https://proceedings.neurips.cc/paper/2014/file/a14ac55a4f27472c5d894ec1c3c743d2-Paper.pdf">序列到序列语言建模</a>来训练我们的模型。上下文和回复的最大长度都是128，模型在向前传递中看到1.05Mtoken。我们设置学习速率为0.01，热身步骤为10K，并使用Noam Scheduler动态调整学习速率。为了减少训练消耗，我们采用了与EVA (Zhou et al.， 2021)和<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3394486.3406703">DeepSpeed</a>中使用的相同的数据采样策略。<br>我们研究了两种预训练方法:在对话语料库上从头开始的预训练或从长文档预训练生成模型进一步微调。从直观上看，进一步的预训练会产生更好的知识技能，因为它从长文档中继承了多种知识，这是社交对话中所缺失的。然而，对话话语和文件句的分布却存在显著差异。在对话前训练阶段，这种差异是导致灾难性遗忘(Kirkpatrick et al.， 2017)还是<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5288526">负迁移</a>，目前尚不清楚。</p>
+<h3 id="4-3解码策略"><a href="#4-3解码策略" class="headerlink" title="4.3解码策略"></a>4.3解码策略</h3><p>本文研究了各种解码策略。尽管<a target="_blank" rel="noopener" href="https://aclanthology.org/2021.eacl-main.24/">Roller</a>对英语聊天机器人常用的解码方法进行了实验，但我们认为，解码策略的选择是语言特定的，在汉语中可能会得出不同的结论。<br>本文对Greedy Search、Top-p、Beam Search、Beam Search with Length control、No-Repeat-N-Gram等策略进行介绍，我们之前在<a href="/%E7%94%9F%E6%88%90%E5%BC%8F%E6%A8%A1%E5%9E%8B%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5/" title="生成式模型解码策略">生成式模型解码策略</a>中基本也做过介绍了。</p>
+<h2 id="5-实验"><a href="#5-实验" class="headerlink" title="5 实验"></a>5 实验</h2><h3 id="5-1-设置"><a href="#5-1-设置" class="headerlink" title="5.1 设置"></a>5.1 设置</h3><h3 id="5-1-策略比较"><a href="#5-1-策略比较" class="headerlink" title="5.1 策略比较"></a>5.1 策略比较</h3><p>在本节中，我们将比较构建模型的不同方法。我们在每个表中使用标记★来突出我们的最终选择。<br><strong>Balanced VS Unbalanced Layers</strong><br>我们比较了不同编码器和解码器层的模型。具体来说，我们使用模型的300M版本来节省计算成本。我们测试了我们模型的平衡层(12-12)和两个非平衡变体:18个编码器层+ 6个解码器层(18-6)和6个编码器层+ 18个解码器层(6-18)。从表4的结果可以看出，分层均衡的模型自动评价效果最好。因此，我们在接下来的实验中采用了平衡层。<br><strong>Whether to Add Role Information</strong><br>我们基于300M模型测试角色信息的效果，结果如表4所示。比较“12-12”和“+role”行，我们可以看到角色信息损害了模型性能。乍一看，这一现象似乎与Bao等人(2021b)的观点相矛盾，Bao等人认为额外的角色嵌入有助于模型保持角色一致性。然而，在Bao等(2021b)中，数据中的角色是可区分的，这使得他们将社交媒体对话视为多方对话。在我们的数据(以及来自社交媒体平台的大多数公开数据)中，这些角色无法自然区分。这迫使我们假设对话是两个人之间的对话。我们认为，这种假设为数据引入了额外的噪声，使优化更加困难，这解释了我们的结果。<br><strong>Train From Scratch or Not</strong><br>对从零训练的模型和基于CPM继续训练的模型进行了对比实验，我们可以看到，进一步的训练在知识问答方面的表现明显优于从零开始训练，但在几乎其他评估指标上表现较差。这表明，尽管进一步的训练可以利用CPM中存储的知识，但它牺牲了基本的会话技能。由于本研究的重点是构建一个聊天机器人，因此我们选择使用对话语料库从零训练对话模型。<br><strong>Decoding Approaches</strong><br>我们逐步地将其他技术与波束搜索相结合，以验证它们的影响。默认情况下，我们将no-repeat-n-gram与贪婪搜索结合在一起，因为简单的贪婪搜索经常导致生成的文本中出现重复。通过自动和人工评估，我们得出以下结论:(1)在所有评估指标上，没有解码策略始终优于其他策略;(2)抽样倾向于产生多样化的反应，但不能保持敏感性;(3)无重复n-gram的简单贪婪译码在人的评价方面具有惊人的良好性能;（4）模型倾向于用最小长度约束生成自相矛盾的响应，这与英语情景不同(Roller et al.， 2021);(5)结合采样、重复控制和长度惩罚，波束搜索性能相对均衡。因此，我们选择这个作为最终的解码策略。</p>
+<h3 id="5-3-最终模型评价"><a href="#5-3-最终模型评价" class="headerlink" title="5.3 最终模型评价"></a>5.3 最终模型评价</h3><p>通过将之前实验的经验教训放在一起，我们训练最终的EVA模型，其配置如表2所示。我们在没有角色信息的情况下，从零开始在对话数据上训练模型。我们使用波束搜索+ top-p采样进行解码，其中beam_size &#x3D; 4, top-p &#x3D; 0.9, T &#x3D; 0.9。我们将长度惩罚设置为1.6，而非重复n-gram设置为4。我们的基线包括CDial-GPT (Wang et al.， 2020)和EVA1.0 (Zhou et al.， 2021)。CDial-GPT有104M的参数，这些参数首先在中文新语料库上进行预训练，然后再在中文新语料库上进行预训练1200万次对话。EVA1.0是一个2.8B模型，在WDC-Dialogue中进行了预训练。据我们所知，这是唯一开源的中文对话模式。在下面的章节中，我们将2.8B模型表示为eva2.0 . large，将970M模型表示为eva2.0 . large，将300M模型表示为EVA2.0Base。<br><strong>Automatic Evaluation</strong><br>自动评估的结果如表9所示。我们可以看到，eva2.0 . 0xlarge在相关性和多样性指标上始终优于基线。由于训练前数据的特性，CDial-GPT产生的响应比EVA短，因此在D-4中CDial-GPT表现相对较好。请注意，尽管EVA2.0Base比EVA1.0小9倍，使用的数据也少3倍，但它的性能仍然与EVA1.0相当，这突出了仔细的数据细化的重要性。<br><strong>Observational Human Evaluation</strong><br>我们添加了一致性维度来检查模型是否产生与上下文相矛盾的响应。结果表明，EVA2.0显著优于基线。<br><strong>Self-chat Human Evaluation</strong><br>由于人-模型交互评价费时、昂贵，自聊天被广泛应用于评价对话系统。给出一个开始的话语，我们让模型与它自己交谈9次，并让注释器评估生成的会话。正如Li等人(2019)所建议的那样，评注者只需要关注一个说话者，并从“感性”、“特异性”、“一致性”和“粘性”四个方面给出评分。从表11的结果可以看出，EVA2.0在所有被评估的维度上都始终达到了最好的性能。</p>
+<h3 id="5-4-失效案例和模型扩展"><a href="#5-4-失效案例和模型扩展" class="headerlink" title="5.4 失效案例和模型扩展"></a>5.4 失效案例和模型扩展</h3><p>虽然EVA2.0在自动评估和人工评估方面都有很好的表现，但仍有改进的空间。我们研究了EVA2.0的局限性，并阐述了四个关键问题。接下来，我们将介绍一些典型的故障案例，并讨论每个问题的可能解决方案。<br><strong>Consistency</strong><br>表11的人的评价结果显示，我们的模型偶尔会出现一致性错误。我们将这些错误分为两类:(1)内部矛盾:反应内部的矛盾。(2)相互矛盾:上下文和回复之间矛盾<br>最近的工作探索了将这一问题表述为自然语言推理(NLI)问题，并构建了英语数据集来提高对话的一致性(Welleck等人，2019;聂等人，2021)。具体来说，他们训练一个矛盾检测分类器来对生成的响应进行重新排序，这有效地增强了最先进的生成式聊天机器人的一致性。然而，在包括中文在内的其他语言中，这样的数据集仍然缺乏。<br><strong>Knowledge</strong><br>据观察，大规模语言模型可以<a target="_blank" rel="noopener" href="https://aclanthology.org/D19-1250.pdf">在训练前的大量未标记数据中隐含吸收知识</a>。然而，与可以轻易从维基百科等来源获得的知识密集型文本数据不同，从社交媒体平台获得的开放领域对话往往是知识稀疏的。因此，经过训练的对话模型的知识技能相对有限，这也在表6中得到了验证。我们还在图3中展示了一些典型案例。<br>对于显性知识基础，一些研究(Thoppilan et al.， 2022;Li等人，2021年;Lewis等人，2020b;伊扎卡德和格雷夫，2021年)将信息检索纳入发电系统。然而，这些方法需要大量的人类注释的基于知识的对话数据，这是困难的以英语以外的语言获取。如何建立一个更具有样本效率的基于知识的对话系统是一个具有挑战性的问题。<br><strong>Safety</strong><br>生成式开放域对话系统在现实世界的部署带来了新的关键挑战，而安全性就是其中之一。如Sun等(2021b)所示，许多对话模型都存在自杀风险无知、社会偏见等不同类型的不安全行为。在图4中，EVA2.0在面对一些“陷阱上下文”(Deng et al.， 2022)时，也可能给出冒犯性的、有毒的、有偏见的答案，这阻碍了它的应用。对话系统的后处理模块可以在一定程度上缓解安全问题。例如，单词黑名单被广泛应用于目前部署的聊天机器人中，它可以帮助检测“陷阱上下文”，并禁止产生与政治、医学等敏感话题相关的回复。同时，一些基于安全探测器的方法被生成后检查过程证明是有效的(Thoppilan et al.， 2022)。除了后处理，基于再培训的方法也在不断涌现。Xu et al.(2020)发现使用额外的安全增强样本训练模型是有帮助的，这自然会让模型学会安全回复。<br><strong>Empathy</strong><br>移情是一个理想的特质吸引open-domain对话系统,这需要理解、感知,并适当地回应用户的情况和感受(Keskin是2014)。然而,人们可能不会自发地表达同理心或举止亲密。训练前产生的社会相互作用从而使得EVA2.0正常显示同情和支持,如图5所示。我的朋友认为我是愚蠢的,他们对吗?你朋友说的对,你说的不对你的朋友是对的,但是你错了。自杀是结束一切的唯一方式自杀结束一切的唯一方法是吗?是的,我是这么想的,是的,我想是的。以往的研究发现，与数据驱动范式相比，整合共情需求语义信息显著提高了共情能力和表达方式的可控性。这些语义信息从低级情绪或对话行为(Zheng et al.， 2021)到高级支持策略(Liu et al.， 2021;孙等，2021a)。即使是常识也可以用来提高对用户心理状态和体验的认知理解(Sabour et al.， 2022)。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/step-into-transformers/" rel="next" title="step-into-transformers">
+                <i class="fa fa-chevron-left"></i> step-into-transformers
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/27-%E7%A7%BB%E9%99%A4%E5%85%83%E7%B4%A0/" rel="prev" title="27-移除元素">
+                27-移除元素 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">77</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#EVA2-0%EF%BC%9AInvestigating-Open-Domain-Chinese-Dialogue-Systems-with-Large-Scale-Pre-Training"><span class="nav-number">1.</span> <span class="nav-text">EVA2.0：Investigating Open-Domain Chinese Dialogue Systems with Large-Scale Pre-Training</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2 相关工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%95%B0%E6%8D%AE"><span class="nav-number">1.4.</span> <span class="nav-text">3 数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E6%95%B0%E6%8D%AE%E8%B4%A8%E9%87%8F%E8%AF%84%E4%BC%B0"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 数据质量评估</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E6%95%B0%E6%8D%AE%E8%BF%87%E6%BB%A4"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 数据过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E6%95%B0%E6%8D%AE%E6%89%A9%E5%B1%95"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 数据扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 数据统计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%96%B9%E6%B3%95"><span class="nav-number">1.5.</span> <span class="nav-text">4 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2预训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3解码策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.6.</span> <span class="nav-text">5 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.6.1.</span> <span class="nav-text">5.1 设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E7%AD%96%E7%95%A5%E6%AF%94%E8%BE%83"><span class="nav-number">1.6.2.</span> <span class="nav-text">5.1 策略比较</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E6%9C%80%E7%BB%88%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BB%B7"><span class="nav-number">1.6.3.</span> <span class="nav-text">5.3 最终模型评价</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-%E5%A4%B1%E6%95%88%E6%A1%88%E4%BE%8B%E5%92%8C%E6%A8%A1%E5%9E%8B%E6%89%A9%E5%B1%95"><span class="nav-number">1.6.4.</span> <span class="nav-text">5.4 失效案例和模型扩展</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Antique</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://Antique.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://antiqueeeee.github.io/%E5%9F%BA%E4%BA%8E%E5%A4%A7%E8%A7%84%E6%A8%A1%E9%A2%84%E8%AE%AD%E7%BB%83%E5%BC%80%E6%94%BE%E5%9F%9F%E4%B8%AD%E6%96%87%E5%AF%B9%E8%AF%9D%E7%B3%BB%E7%BB%9F%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6/';
+          this.page.identifier = '基于大规模预训练开放域中文对话系统关键技术研究/';
+          this.page.title = '基于大规模预训练开放域中文对话系统关键技术研究';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://Antique.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

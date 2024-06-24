@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="滤波器与卷积核一般在检索卷积神经网络相关资料时都会看到类似的样例图。  这里需要强调的是，滤波器（Filter）和卷积核（Kernel）并非指的是同一样东西，每个通道的数据都需要对应一个卷积核，若干个卷积核总称为滤波器。在图示中，输入图像数据包含3通道，所以对应的卷积核就要包含3个，这3个卷积核组合成为一个滤波器。滤波器的个数与输出通道数相对应，若假设输入数据通道数为$\bf{C_{in}}$，o">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CNN在NLP中的使用">
+<meta property="og:url" content="https://antiqueeeee.github.io/CNN%E5%9C%A8NLP%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="提克破事水">
+<meta property="og:description" content="滤波器与卷积核一般在检索卷积神经网络相关资料时都会看到类似的样例图。  这里需要强调的是，滤波器（Filter）和卷积核（Kernel）并非指的是同一样东西，每个通道的数据都需要对应一个卷积核，若干个卷积核总称为滤波器。在图示中，输入图像数据包含3通道，所以对应的卷积核就要包含3个，这3个卷积核组合成为一个滤波器。滤波器的个数与输出通道数相对应，若假设输入数据通道数为$\bf{C_{in}}$，o">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://antiqueeeee.github.io/CNN%E5%9C%A8NLP%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/%E5%9B%BE%E4%BE%8B.png">
+<meta property="article:published_time" content="2023-03-27T14:06:12.000Z">
+<meta property="article:modified_time" content="2024-06-24T10:39:03.850Z">
+<meta property="article:author" content="Antique">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://antiqueeeee.github.io/CNN%E5%9C%A8NLP%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/%E5%9B%BE%E4%BE%8B.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://antiqueeeee.github.io/CNN在NLP中的使用/"/>
+
+
+
+
+
+  <title>CNN在NLP中的使用 | 提克破事水</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">提克破事水</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://antiqueeeee.github.io/CNN%E5%9C%A8NLP%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="提克破事水">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CNN在NLP中的使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2023-03-27T14:06:12+00:00">
+                2023-03-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/CNN%E5%9C%A8NLP%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="CNN在NLP中的使用/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="滤波器与卷积核"><a href="#滤波器与卷积核" class="headerlink" title="滤波器与卷积核"></a>滤波器与卷积核</h2><p>一般在检索卷积神经网络相关资料时都会看到类似的样例图。</p>
+<img src="/CNN%E5%9C%A8NLP%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/%E5%9B%BE%E4%BE%8B.png" class="" title="图例">
+<p>这里需要强调的是，滤波器（Filter）和卷积核（Kernel）并非指的是同一样东西，<strong>每个通道的数据都需要对应一个卷积核，若干个卷积核总称为滤波器。</strong>在图示中，输入图像数据包含3通道，所以对应的卷积核就要包含3个，这3个卷积核组合成为一个滤波器。<br><strong>滤波器的个数与输出通道数相对应</strong>，若假设输入数据通道数为$\bf{C_{in}}$，out_channels为$\bf{N}$，，每个通道需要对应一个卷积核，那么实际上就有$3\bf{N}$个卷积核。以上图为例，模型输入为三通道，对应三个卷积核对每个通道中的数据进行卷积操作，将最终得到的矩阵相加得到最终结果。</p>
+<h2 id="Pytorch中的卷积层定义"><a href="#Pytorch中的卷积层定义" class="headerlink" title="Pytorch中的卷积层定义"></a>Pytorch中的卷积层定义</h2><h3 id="引包"><a href="#引包" class="headerlink" title="引包"></a>引包</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br></pre></td></tr></table></figure>
+<h3 id="Conv1d"><a href="#Conv1d" class="headerlink" title="Conv1d"></a>Conv1d</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">torch.nn.Conv1d(</span><br><span class="line">    in_channels</span><br><span class="line">    , out_channels</span><br><span class="line">    , kernel_size</span><br><span class="line">    , stride=<span class="number">1</span>, padding=<span class="number">0</span>, dilation=<span class="number">1</span>, groups=<span class="number">1</span>, bias=<span class="literal">True</span>, padding_mode=<span class="string">&#x27;zeros&#x27;</span>, device=<span class="literal">None</span>, dtype=<span class="literal">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="Conv2d"><a href="#Conv2d" class="headerlink" title="Conv2d"></a>Conv2d</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">torch.nn.Conv2d(</span><br><span class="line">    in_channels</span><br><span class="line">    , out_channels</span><br><span class="line">    , kernel_size</span><br><span class="line">    , stride=<span class="number">1</span>, padding=<span class="number">0</span>, dilation=<span class="number">1</span>, groups=<span class="number">1</span>, bias=<span class="literal">True</span>, padding_mode=<span class="string">&#x27;zeros&#x27;</span>, device=<span class="literal">None</span>, dtype=<span class="literal">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>Con1d和Conv2d的函数定义如上所示，in_channels代表着输入数据的通道数，以图像数据为例，如果输入的是3通道，那么in_channels就要为3，输入数据需要与卷积层通道数对齐。out_channels代表滤波器的个数，kernel_size为卷积核的尺寸。kernel_size、dilation、padding可以设定为整型也可以设定为元组。kernel_size输入为整型$\bf{X}$时，卷积核尺寸为$\bf{X}\times\bf{X}$；当输入为（x，y）时，卷积核尺寸即为$\bf{X}\times\bf{Y}$。padding和dilation输入为整型时，意为对行、对列的padding或dilation均相同；当输入为元组时，代表当前卷积层进行padding和dilation时对行、对列设定不同数值。</p>
+<h3 id="卷积层的输入"><a href="#卷积层的输入" class="headerlink" title="卷积层的输入"></a>卷积层的输入</h3><p>Conv1D与Conv2D的输入略有不同，输入Conv1d的往往为三维数据，即$(\bf{N},\bf{C_{in}},\bf{L})$，输入Conv2d的数据往往为四维，即$(\bf{N},\bf{C_{in}},\bf{H},\bf{W})$。以$(\bf{N},\bf{C_{in}},\bf{L})$为例，$\bf{N}$代表一个batch中有$\bf{N}$条数据，每条数据的长度为$\bf{L}$，数据的通道数为$\bf{C_{in}}$；$(\bf{N},\bf{C_{in}},\bf{H},\bf{W})$中$\bf{N}$和$\bf{C_{in}}$的含义不变，$\bf{H}$和$\bf{W}$分别代表数据的高度和宽度。在自然语言处理相关任务中，输入数据的维度多为$(\bf{N},\bf{L},Embedding_dim)$，并没有“通道”的概念。</p>
+<h2 id="CNN在NLP中的应用"><a href="#CNN在NLP中的应用" class="headerlink" title="CNN在NLP中的应用"></a>CNN在NLP中的应用</h2><p>这里我们先假设一组embedding之后的数据，batch大小为3，批中语句长度为12，每个字的embedding_dim为7，共3个滤波器，最终得到的数据如代码块所示。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> copy <span class="keyword">import</span> deepcopy</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line">batch = <span class="number">2</span></span><br><span class="line">seq_len = <span class="number">12</span></span><br><span class="line">bert_hid_size = <span class="number">7</span></span><br><span class="line">output_channel = <span class="number">3</span></span><br><span class="line">sequence = torch.tensor(np.random.rand(batch,seq_len,bert_hid_size),dtype=torch.<span class="built_in">float</span>)</span><br></pre></td></tr></table></figure>
+<p>前面介绍了再Pytorch中Conv2d层的输入是四个维度，所以需要将embedding之后的数据升1维，变为（batch，1，len，embedding_dim）。这时可以有两种做法，一种是直接将“1”看作数据的通道数，另一种是将原始数据转变维度，使用seq_len或embedding_dim作为通道数。直接将“1”看作通道数的实现如以下代码块所示。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> copy <span class="keyword">import</span> deepcopy</span><br><span class="line">conv2d_layer = torch.nn.Conv2d(</span><br><span class="line">    in_channels = <span class="number">1</span></span><br><span class="line">    ,out_channels = <span class="number">3</span></span><br><span class="line">    ,kernel_size = <span class="number">3</span></span><br><span class="line">)</span><br><span class="line">inputs = deepcopy(sequence).unsqueeze(<span class="number">1</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;inputs.shape:<span class="subst">&#123;inputs.shape&#125;</span>&quot;</span>)</span><br><span class="line">outputs = conv2d_layer(inputs)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;outputs.shape:<span class="subst">&#123;outputs.shape&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># inputs.shape:torch.Size([2, 1, 12, 7])</span></span><br><span class="line"><span class="comment"># outputs.shape:torch.Size([2, 3, 10, 5])</span></span><br></pre></td></tr></table></figure>
+<p>除此之外，还可以将embedding_dim作为通道数进行卷积操作，实现如以下代码块所示。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> copy <span class="keyword">import</span> deepcopy</span><br><span class="line">conv2d_layer = torch.nn.Conv2d(</span><br><span class="line">    in_channels = bert_hid_size</span><br><span class="line">    ,out_channels = <span class="number">3</span></span><br><span class="line">    ,kernel_size = <span class="number">3</span></span><br><span class="line"><span class="comment">#     ,padding = 1</span></span><br><span class="line">)</span><br><span class="line">inputs = deepcopy(sequence).unsqueeze(<span class="number">1</span>).permute(<span class="number">0</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">2</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;inputs.shape:<span class="subst">&#123;inputs.shape&#125;</span>&quot;</span>)</span><br><span class="line">outputs = conv2d_layer(inputs)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;outputs.shape:<span class="subst">&#123;outputs.shape&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># RuntimeError：Calculated padded input size per channel: (1 x 12). Kernel size: (3 x 3). </span></span><br><span class="line"><span class="comment"># Kernel size can&#x27;t be greater than actual input size</span></span><br></pre></td></tr></table></figure>
+<p>这里如果没有进行padding操作会报错“其中提到计算出的每个channel输入大小：(1x 12)，kernel大小：(3 x3)，内核大小不能大于实际输入大小”。这是不是可以说明，将embedding_dim作为通道后，在每个channel中的数据实际上是（batch, 1, 1, seq_len），也就是channel把原来的矩阵“掰碎”了？在原始数据中使用维度为768的向量表示一个token，现在在每个通道中，使用一个维度为1的向量代表一个token，换句话说，卷积核的尺寸设置成3，就已经是3-gram模型了？</p>
+<p>在这种情况下，kernel_size设计成（1，seq_len）还是（1，int）？如果设计成（1，3）是对应着3-gram模型吗？<br>这里如果增加了padding，也是可以运行的，结果为torch.Size([3, 3, 1, 12])，这里每个维度代表的含义？第一个3是batch，第二个3是几个滤波器，12代表seq_len，那最终的1可以理解成将每个token的向量转变成了1个数字吗？</p>
+<p>对数据进行padding后，上述报错的代码即可执行，实现效果如下代码块所示。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> copy <span class="keyword">import</span> deepcopy</span><br><span class="line">conv2d_layer = torch.nn.Conv2d(</span><br><span class="line">    in_channels = bert_hid_size</span><br><span class="line">    ,out_channels = <span class="number">3</span></span><br><span class="line">    ,kernel_size = <span class="number">3</span></span><br><span class="line">    ,padding = <span class="number">1</span></span><br><span class="line">)</span><br><span class="line">inputs = deepcopy(sequence).unsqueeze(<span class="number">1</span>).permute(<span class="number">0</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">2</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;inputs.shape:<span class="subst">&#123;inputs.shape&#125;</span>&quot;</span>)</span><br><span class="line">outputs = conv2d_layer(inputs)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;outputs.shape:<span class="subst">&#123;outputs.shape&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># inputs.shape:torch.Size([2, 7, 1, 12])</span></span><br><span class="line"><span class="comment"># outputs.shape:torch.Size([2, 3, 1, 12])</span></span><br></pre></td></tr></table></figure>
+<p>这里观察卷积后得到的数据维度可以发现，batch、seq_len、以及升维的channel都没有变，原本7维的词向量缩短为3维。<br>也可以将seq_len作为channel，程序依旧可以运行，实现如以下代码块所示。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> copy <span class="keyword">import</span> deepcopy</span><br><span class="line">conv2d_layer = torch.nn.Conv2d(</span><br><span class="line">    in_channels = seq_len</span><br><span class="line">    ,out_channels = <span class="number">3</span></span><br><span class="line">    ,kernel_size = <span class="number">3</span></span><br><span class="line">    ,padding = <span class="number">1</span></span><br><span class="line">)</span><br><span class="line">inputs = deepcopy(sequence).unsqueeze(<span class="number">1</span>).permute(<span class="number">0</span>,<span class="number">2</span>,<span class="number">1</span>,<span class="number">3</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;inputs.shape:<span class="subst">&#123;inputs.shape&#125;</span>&quot;</span>)</span><br><span class="line">outputs = conv2d_layer(inputs)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;outputs.shape:<span class="subst">&#123;outputs.shape&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># inputs.shape:torch.Size([2, 12, 1, 7])</span></span><br><span class="line"><span class="comment"># outputs.shape:torch.Size([2, 3, 1, 7])</span></span><br></pre></td></tr></table></figure>
+<p>这里观察输出结果维度发现，batch、channel、embedding维度没有变，但是原本对应句子长度的数值缩减到3。<br>torch.nn.Conv1d实现起来与Conv2d差不多，下面两个代码块依次以embedding_dim和seq_len作为通道。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> copy <span class="keyword">import</span> deepcopy</span><br><span class="line">conv1d_layer = torch.nn.Conv1d(</span><br><span class="line">    in_channels = bert_hid_size</span><br><span class="line">    ,out_channels = <span class="number">3</span></span><br><span class="line">    ,kernel_size = <span class="number">3</span></span><br><span class="line">    ,padding = <span class="number">1</span></span><br><span class="line">)</span><br><span class="line">inputs = deepcopy(sequence).permute(<span class="number">0</span>,<span class="number">2</span>,<span class="number">1</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;inputs.shape:<span class="subst">&#123;inputs.shape&#125;</span>&quot;</span>)</span><br><span class="line">outputs = conv1d_layer(inputs)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;outputs.shape:<span class="subst">&#123;outputs.shape&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># inputs.shape:torch.Size([2, 7, 12])</span></span><br><span class="line"><span class="comment"># outputs.shape:torch.Size([2, 3, 12])</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> copy <span class="keyword">import</span> deepcopy</span><br><span class="line">conv1d_layer = torch.nn.Conv1d(</span><br><span class="line">    in_channels = seq_len</span><br><span class="line">    ,out_channels = <span class="number">3</span></span><br><span class="line">    ,kernel_size = <span class="number">3</span></span><br><span class="line">    ,padding = <span class="number">1</span></span><br><span class="line">)</span><br><span class="line">inputs = deepcopy(sequence)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;inputs.shape:<span class="subst">&#123;inputs.shape&#125;</span>&quot;</span>)</span><br><span class="line">outputs = conv1d_layer(inputs)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;outputs.shape:<span class="subst">&#123;outputs.shape&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># inputs.shape:torch.Size([2, 12, 7])</span></span><br><span class="line"><span class="comment"># outputs.shape:torch.Size([2, 3, 7])</span></span><br></pre></td></tr></table></figure>
+<p>所以说使用CNN进行NLP相关任务的时候最重要的一个原则，需要沿着embedding_dim那个维度进行卷积，例如输入为（batch，len，dim）时（4维时同理），将dim作为通道数，即（batch，dim，len）每个通道内形状为（1，len）相当于原来的embedding被“降维”成了一个数，此时kernel_size设为（1，3）则是一个3-gram模型。<br>也有许多博客说Conv1d和Conv2d的区别在于卷积的方向，Conv1D的卷积方向是一维的，只能一个方向，Conv2D的卷积方向是二维的，横着卷完竖着卷。但是在处理文本数据时，理论上应该把每个词的词向量完整的包含在卷积核中，对于一个（batch, len, embedding_dim）的矩阵，卷积核尺寸应该类似于（height, embedding_dim），这时卷积的方向不也是只能向下了嘛？<br>上述的方法的确可以使用CNN对文本embedding后的矩阵进行运算，但是存在一个比较严重的问题就是模型<strong>很难做深</strong>。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/%E4%BB%80%E4%B9%88%E6%98%AFBert/" rel="next" title="什么是Bert">
+                <i class="fa fa-chevron-left"></i> 什么是Bert
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Coding%E9%9A%8F%E6%89%8B%E8%AE%B0/" rel="prev" title="Coding随手记">
+                Coding随手记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">77</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E5%8D%B7%E7%A7%AF%E6%A0%B8"><span class="nav-number">1.</span> <span class="nav-text">滤波器与卷积核</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pytorch%E4%B8%AD%E7%9A%84%E5%8D%B7%E7%A7%AF%E5%B1%82%E5%AE%9A%E4%B9%89"><span class="nav-number">2.</span> <span class="nav-text">Pytorch中的卷积层定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%8C%85"><span class="nav-number">2.1.</span> <span class="nav-text">引包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conv1d"><span class="nav-number">2.2.</span> <span class="nav-text">Conv1d</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conv2d"><span class="nav-number">2.3.</span> <span class="nav-text">Conv2d</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%B7%E7%A7%AF%E5%B1%82%E7%9A%84%E8%BE%93%E5%85%A5"><span class="nav-number">2.4.</span> <span class="nav-text">卷积层的输入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CNN%E5%9C%A8NLP%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">CNN在NLP中的应用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Antique</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://Antique.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://antiqueeeee.github.io/CNN%E5%9C%A8NLP%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/';
+          this.page.identifier = 'CNN在NLP中的使用/';
+          this.page.title = 'CNN在NLP中的使用';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://Antique.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

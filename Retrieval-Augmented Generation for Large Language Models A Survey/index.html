@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="RAG," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Abstarct 大型语言模型（LLM）展示了强大的功能，但在实际应用中仍然面临挑战，如幻觉、知识更新缓慢以及答案缺乏透明度。检索增强生成（RAG）是指在使用LLM回答问题之前，从外部知识库中检索相关信息。RAG已被证明可以显著提高答案的准确性，减少模型幻觉，尤其是在知识密集型任务中。通过引用来源，用户可以验证答案的准确性，并增加对模型输出的信任。它还促进了知识更新和特定领域知识的引入。RAG有效">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Retrieval-Augmented Generation for Large Language Models A Survey">
+<meta property="og:url" content="https://antiqueeeee.github.io/Retrieval-Augmented%20Generation%20for%20Large%20Language%20Models%20A%20Survey/index.html">
+<meta property="og:site_name" content="提克破事水">
+<meta property="og:description" content="Abstarct 大型语言模型（LLM）展示了强大的功能，但在实际应用中仍然面临挑战，如幻觉、知识更新缓慢以及答案缺乏透明度。检索增强生成（RAG）是指在使用LLM回答问题之前，从外部知识库中检索相关信息。RAG已被证明可以显著提高答案的准确性，减少模型幻觉，尤其是在知识密集型任务中。通过引用来源，用户可以验证答案的准确性，并增加对模型输出的信任。它还促进了知识更新和特定领域知识的引入。RAG有效">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-20T11:02:50.000Z">
+<meta property="article:modified_time" content="2024-06-24T10:39:03.862Z">
+<meta property="article:author" content="Antique">
+<meta property="article:tag" content="RAG">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://antiqueeeee.github.io/Retrieval-Augmented Generation for Large Language Models A Survey/"/>
+
+
+
+
+
+  <title>Retrieval-Augmented Generation for Large Language Models A Survey | 提克破事水</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">提克破事水</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://antiqueeeee.github.io/Retrieval-Augmented%20Generation%20for%20Large%20Language%20Models%20A%20Survey/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="提克破事水">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Retrieval-Augmented Generation for Large Language Models A Survey</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2023-12-20T11:02:50+00:00">
+                2023-12-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BA%E6%96%87%E6%B5%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">论文浅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/Retrieval-Augmented%20Generation%20for%20Large%20Language%20Models%20A%20Survey/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="Retrieval-Augmented Generation for Large Language Models A Survey/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Abstarct"><a href="#Abstarct" class="headerlink" title="Abstarct"></a>Abstarct</h2><p> 大型语言模型（LLM）展示了强大的功能，但在实际应用中仍然面临挑战，如幻觉、知识更新缓慢以及答案缺乏透明度。检索增强生成（RAG）是指在使用LLM回答问题之前，从外部知识库中检索相关信息。RAG已被证明可以显著提高答案的准确性，减少模型幻觉，尤其是在知识密集型任务中。通过引用来源，用户可以验证答案的准确性，并增加对模型输出的信任。它还促进了知识更新和特定领域知识的引入。RAG有效地将LLM的参数化知识与非参数化的外部知识库相结合，使其成为实现大型语言模型的最重要方法之一。本文概述了LLM时代RAG的发展范式，总结了三种范式：Naive RAG、Advanced RAG和Modular RAG。然后，它提供了RAG的三个主要组件的总结和组织：检索器、生成器和增强方法，以及每个组件中的关键技术。此外，还讨论了如何评估RAG模型的有效性，介绍了RAG的两种评估方法，强调了评估的关键指标和能力，并提出了最新的自动评估框架。最后，从纵向优化、横向可扩展性以及RAG的技术堆栈和生态系统三个方面介绍了未来潜在的研究方向。</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p> 大型语言模型（LLM）比我们以前在自然语言处理（NLP）中看到的任何模型都更强大。GPT系列模型[Brown et al.，2020，OpenAI，2023]、LLama系列模型[Touvron et al.，2023]，Gemini[Google，2023]和其他大型语言模型展示了令人印象深刻的语言和知识掌握能力，在多个评估基准中超过了人类基准水平[Wang et al.，2019，Hendrycks et al.，2021，Srivastava et al.，2022]。<br> 然而，大型语言模型也存在许多缺点。他们在处理特定领域或高度专业化的查询时经常捏造事实[Zhang等人，2023b]，缺乏知识[Kandpal等人，2023]。例如，当所寻求的信息超出了模型的训练数据或需要最新数据时，LLM可能无法提供准确的答案。当在现实世界的生产环境中部署生成人工智能时，这种限制带来了挑战，因为盲目使用黑盒LLM可能不够。传统上，神经网络通过微调模型来参数化知识，从而适应特定领域或专有信息。虽然这项技术产生了显著的结果，但它需要大量的计算资源，成本高昂，并且需要专门的技术专业知识，使其不太适应不断变化的信息环境。参数知识和非参数知识起着不同的作用。参数知识是通过训练LLM获得的，并存储在神经网络权重中，代表模型对训练数据的理解和概括，形成生成响应的基础。另一方面，非参数知识存在于向量数据库等外部知识源中，不直接编码到模型中，而是作为可更新的补充信息处理。非参数知识使LLM能够访问和利用最新或特定领域的信息，从而提高响应的准确性和相关性。<br> 纯参数化语言模型（LLM）将从大量语料库中获取的世界知识存储在模型的参数中。然而，这种模式也有其局限性。首先，很难从训练语料库中保留所有知识，尤其是不太常见和更具体的知识。其次，由于模型参数不能动态更新，参数知识很容易随着时间的推移而过时。最后，参数的扩展导致训练和推理的假定费用增加。为了解决纯参数化模型的局限性，语言模型可以采用半参数化方法，将非参数化语料库数据库与参数化模型相集成。这种方法被称为Retrieval Augmented Generation（RAG）。<br> 术语检索增强生成（RAG）最早由[Lewis等人，2020]引入。它将预先训练的检索器与预先训练的seq2seq模型（生成器）相结合，并进行端到端的微调，以更可解释和模块化的方式获取知识。在大型模型出现之前，RAG主要专注于端到端模型的直接优化。在检索端进行密集检索，例如使用基于向量的密集通道检索（DPR）[Carpukhin et al.，2020]，以及在生成端训练较小的模型是常见的做法。由于总体上较小的参数大小，检索器和生成器经常进行同步的端到端训练或微调[Izacard et al.，2022]。在类似LLM的ChatGPT出现后，生成语言模型成为主流，在各种语言任务中表现出令人印象深刻的性能[Bai et al.，2022，OpenAI，2023，Touvron et al.，2023；谷歌，2023]。然而，LLM仍然面临挑战，如幻觉[姚等人，2023，Bang等人，2023]、知识更新和数据相关问题。这影响了LLM的可靠性，使其在某些严重的任务场景中举步维艰，尤其是在需要获取大量知识的知识密集型任务中，如开放领域问答[Chen和Yih，2020，Reddy等人，2019，Kwiatkowski等人，2019]和常识推理[Clark等人，2019；Bisk等人，2020]。参数内的隐性知识可能是不完整和不充分的。<br> 随后的研究发现，将RAG引入大型模型的上下文学习（ICL）可以缓解上述问题，具有显著且易于实施的效果。在推理过程中，RAG动态地从外部知识源检索信息，使用检索到的数据作为参考来组织答案。这大大提高了反应的准确性和相关性，有效地解决了LLM中存在的幻觉问题。LLM出现后，这项技术迅速获得了关注，并已成为改进聊天机器人和使LLM更实用的最热门技术之一。通过将事实知识与LLM的训练参数分离，RAG巧妙地将生成模型的强大能力与检索模块的灵活性相结合，为纯参数化模型固有的知识不完整和不足问题提供了有效的解决方案。本文系统地回顾和分析了RAG的当前研究方法和未来发展路径，将其归纳为三个主要范式：Naive RAG、Advanced RAG和Modular RAG。随后，本文对三个核心组件：检索、增强和生成进行了综合总结，强调了RAG的改进方向和当前技术特征。在扩充方法部分，当前的工作分为三个方面：RAG的扩充阶段、扩充数据源和扩充过程。此外，本文还总结了RAG的评估体系、适用场景以及其他相关内容。通过本文，读者对大型模型和检索增强生成有了更全面、系统的了解。他们熟悉了知识检索增强的进化路径和关键技术，从而能够辨别不同技术的优缺点，识别适用场景，并在实践中探索当前的典型应用案例。值得注意的是，在之前的工作中，Feng等人[2023b]系统地回顾了将大型模型与知识相结合的方法、应用和未来趋势，主要关注知识编辑和检索增强方法。朱等人[2023]介绍了为大型语言模型增强检索系统的最新进展，特别关注检索系统。同时，Asai等人[2023a]专注于“什么”、“何时”、“如何”等问题，分析并阐明了基于检索的语言模型中的关键过程。与之相比，本文旨在系统地概述检索增强生成（RAG）的整个过程，并特别关注通过知识检索增强大型语言模型生成的相关研究。<br> RAG算法和模型的发展如图1所示。从时间上看，大多数与RAG相关的研究都出现在2020年之后，2022年12月ChatGPT发布时出现了一个重大转折点。自ChatGPT发布以来，自然语言处理领域的研究已进入大模型时代。Naive RAG技术很快得到了重视，导致相关研究的数量迅速增加。在强化策略方面，自RAG概念引入以来，关于训练前和监督微调阶段强化的研究一直在进行中。然而，大多数关于推理阶段强化的研究都出现在LLM时代。这主要是由于与高性能大型模型相关的高训练成本。研究人员试图通过在推理阶段包括RAG模块，以成本效益高的方式结合外部知识来增强模型生成。关于增强数据的使用，早期的RAG主要关注非结构化数据的应用，特别是在开放领域问答的背景下。随后，可供检索的知识来源范围扩大，使用高质量数据作为知识来源，有效地解决了大型模型中错误知识的内化和幻觉等问题。这包括结构化知识，知识图就是一个典型的例子。最近，人们越来越关注自检索，这涉及到挖掘LMS本身的知识以提高其性能。<br> 本文的后续章节结构如下：第二章介绍了RAG的背景。第三章介绍了RAG的主流范式。第四章分析了RAG中的检索器。第五章着重介绍了RAG中的生成器。第6章着重介绍了RAG中的增广方法。第七章介绍了RAG的评价体系。第8章展望了RAG的未来发展趋势。最后，在第九章中，我们总结了调查的主要内容。</p>
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>在本章中，我们将介绍RAG的定义，以及RAG与其他模型优化技术（如微调）之间的比较。</p>
+<h3 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h3><p>RAG的含义随着技术的发展而扩展。在大型语言模型时代，RAG的具体定义是指在回答问题或生成文本时，首先从大量文档中检索相关信息的模型。随后，它利用这些检索到的信息来生成响应或文本，从而提高预测的质量。RAG方法允许开发人员避免为每个特定任务重新训练整个大型模型。相反，他们可以附加一个知识库，为模型提供额外的信息输入，并提高其响应的准确性。RAG方法特别适用于知识密集型任务。总之，RAG系统由两个关键阶段组成：</p>
+<ol>
+<li>利用编码模型基于问题检索相关文档，如BM25、DPR、ColBERT和类似方法[Roberson等人，2009，Karpukhin等人，2020，Khattab和Zaharia，2020]。</li>
+<li>生成阶段：使用检索到的上下文作为条件，系统生成文本。</li>
+</ol>
+<h3 id="RAG-vs-Fine-tuning"><a href="#RAG-vs-Fine-tuning" class="headerlink" title="RAG vs Fine-tuning"></a>RAG vs Fine-tuning</h3><p>在大型语言模型（LLM）的优化中，除了RAG，另一个重要的优化技术是微调。RAG类似于为模型提供教科书，允许它基于特定查询检索信息。这种方法适用于模型需要回答特定查询或处理特定信息检索任务的场景。然而，RAG不适合教授模型理解广泛的领域或学习新的语言、格式或风格。<br>微调类似于让学生通过广泛的学习内化知识。当模型需要复制特定的结构、样式或格式时，这种方法非常有用。微调可以提高非微调模型的性能，并使交互更加高效。它特别适合于强调基础模型中的现有知识，修改或自定义模型的输出，以及为模型提供复杂的指令。然而，微调不适合将新知识纳入模型，也不适合需要快速迭代新用例的情况。<br>微调类似于让学生通过长期学习内化知识。当模型需要复制特定的结构、样式或格式时，此方法适用。微调可以实现优于非微调模型的性能，并且交互更高效。微调特别适合于强调基础模型中的现有知识，修改或自定义模型的输出，以及用复杂的指令指导模型。然而，微调不适用于向模型添加新知识，也不适用于需要快速迭代新用例的场景。RAG和微调（FT）之间的具体比较可以在表1中说明。<br>RAG和微调并不互斥，但可以相互补充，增强模型在不同层面的能力。在某些情况下，将这两种技术相结合可以实现最佳的模型性能。使用RAG进行优化和微调的整个过程可能需要多次迭代才能获得令人满意的结果。<br>现有研究表明，与其他优化大型语言模型的方法相比，检索增强生成（RAG）具有显著优势[Shuster et al.，2021，Yasunaga et al.，2022，Wang et al.，2023c，Borgeud et al.，022]：</p>
+<ul>
+<li>RAG通过将答案与外部知识联系起来，减少语言模型中的幻觉问题，并使生成的回答更加准确可靠，从而提高准确性。</li>
+<li>使用检索技术可以识别最新的信息。与仅依赖训练数据的传统语言模型相比，RAG保持了响应的及时性和准确性。</li>
+<li>透明度是RAG的一个优势。通过引用来源，用户可以验证答案的准确性，增加对模型输出的信任。</li>
+<li>RAG具有定制功能。通过对相关文本语料库进行索引，可以针对不同领域定制模型，为特定领域提供知识支持。</li>
+<li>在安全和隐私管理方面，RAG凭借其在数据库中内置的角色和安全控制，可以更好地控制数据使用。相比之下，微调后的模型可能缺乏对谁可以访问哪些数据的明确管理。</li>
+<li>RAG的可扩展性更强。它可以处理大规模数据集，而无需更新所有参数和创建训练集，使其更经济高效。</li>
+<li>最后，RAG产生的结果更值得信赖。RAG从最新数据中选择确定性结果，而微调模型在处理动态数据时可能会出现幻觉和不准确，缺乏透明度和可信度。</li>
+</ul>
+<h2 id="RAG-Framework"><a href="#RAG-Framework" class="headerlink" title="RAG Framework"></a>RAG Framework</h2><p>RAG的研究范式在不断演变。本章主要介绍RAG研究范式的演变。我们将其分为三种类型：Naive RAG、Advanced RAG和Modular RAG。尽管早期的RAG具有成本效益，并且比原生LLM表现更好，但它仍然面临许多缺点。高级RAG和模块化RAG的出现旨在解决Naive RAG的具体缺陷。</p>
+<h3 id="Naive-RAG"><a href="#Naive-RAG" class="headerlink" title="Naive RAG"></a>Naive RAG</h3><p>Naive RAG研究范式代表了在ChatGPT广泛采用后不久获得重视的最早方法。天真的RAG涉及传统的过程：索引、检索和生成。Naive RAG也被概括为“检索”-“阅读”框架[Ma et al.，2023a]。<br><strong>Indexing</strong><br>从源获取数据并为其建立索引的管道通常处于脱机状态。具体来说，数据索引的构建包括以下步骤：</p>
+<ol>
+<li>数据索引：这包括清理和提取原始数据，将不同的文件格式（如PDF、HTML、Word、Markdown等）转换为纯文本。</li>
+<li>分块：这包括将加载的文本分成更小的块。这是必要的，因为语言模型通常对其可以处理的上下文数量有限制，因此有必要创建尽可能小的文本块。</li>
+<li>嵌入和创建索引：这是通过语言模型将文本编码为矢量的过程。得到的向量将用于后续的检索过程，以计算向量和问题向量之间的相似性。嵌入模型需要很高的推理速度。由于需要对大量的语料库进行编码，并在用户提问时实时对问题进行编码，因此模型的参数大小不应太大。生成嵌入后，下一步是创建索引，存储原始语料库块，并以键值对的形式进行嵌入，以便在未来快速频繁地搜索。<br><strong>Retrieve</strong><br>给定用户的输入，使用与第一阶段相同的编码模型将查询转换为向量。计算问题嵌入和文档块在语料库中的嵌入之间的相似性。基于相似性水平，选择前K个文档块作为当前问题的增强上下文信息。<br><strong>Generation</strong><br>给定的问题和相关文档将合并到一个新的提示中。然后，大型语言模型的任务是根据所提供的信息回答问题。根据不同任务的需要，可以决定是允许大型模型使用其知识，还是仅基于给定信息进行回答。如果有历史对话信息，也可以合并到多轮对话的提示中。</li>
+</ol>
+<p><strong>Drawbacks in Naive RAG</strong><br>Naive RAG在三个领域面临主要挑战：检索质量、响应生成质量和增强过程。<br>关于检索质量，问题是多方面的。主要问题是精度低，检索集中的所有块都与查询相关，这会导致潜在的幻觉和空中空投问题。第二个问题是低召回率，当没有检索到所有相关块时，会出现这种情况，从而阻止LLM获得足够的上下文来合成答案。此外，过时的信息带来了另一个挑战，即数据冗余或过时的数据可能导致不准确的检索结果。<br>就产生反应的质量而言，问题同样多样化。幻觉是一个突出的问题，模型编造了一个上下文中不存在的答案。不相关是另一个问题，模型生成的答案无法解决查询问题。此外，毒性或偏倚，即模型产生有害或冒犯性反应，是另一个问题。</p>
+<p>最后，扩增过程也面临一些挑战。至关重要的是，将检索到的段落中的上下文与当前的生成任务有效地结合起来至关重要。如果处理不当，输出可能会显得不连贯或不连贯。冗余和重复是另一个问题，特别是当多个检索到的段落包含相似的信息，导致生成步骤中的内容重复时。此外，确定多个检索到的段落对生成任务的重要性或相关性是具有挑战性的，并且扩充过程需要适当平衡每个段落的值。检索到的内容也可能来自不同的写作风格或语调，增强过程需要调和这些差异以确保输出的一致性。最后，生成模型可能过度依赖增强信息，导致输出仅重复检索到的内容，而不提供新的价值或合成信息。</p>
+<h3 id="Advanced-RAG"><a href="#Advanced-RAG" class="headerlink" title="Advanced RAG"></a>Advanced RAG</h3><p>Advanced RAG针对Naive RAG的不足进行了有针对性的改进。在检索生成的质量方面，Advanced RAG结合了检索前和检索后的方法。为了解决Naive RAG遇到的索引问题，Advanced RAG通过滑动窗口、细粒度分割和元数据等方法优化了索引。同时，提出了多种优化检索过程的方法。在具体实现方面，Advanced RAG可以通过管道或端到端方式进行调整。</p>
+<p><strong>Pre-Retrieval Process</strong></p>
+<ul>
+<li>优化数据索引<br>优化数据索引的目的是提高索引内容的质量。目前，有五种主要策略用于此目的：增加索引数据的粒度、优化索引结构、添加元数据、对齐优化和混合检索。</li>
+</ul>
+<ol>
+<li>增强数据粒度：预索引优化的目标是提高文本的标准化、一致性，并确保事实的准确性和上下文的丰富性，以保证RAG系统的性能。文本标准化包括去除不相关的信息和特殊字符，以提高检索器的效率。就一致性而言，主要任务是消除实体和术语中的歧义，同时消除重复或冗余信息，以简化检索者的工作重点。确保事实的准确性至关重要，只要可能，就应核实每一条数据的准确性。上下文保留，以适应系统在现实世界中的交互上下文，可以通过添加另一层具有领域特定注释的上下文，再加上通过用户反馈循环的持续更新来实现。时间敏感性是重要的上下文信息，应设计机制来刷新过时的文档。总之，优化索引数据的重点应该放在清晰度、上下文和正确性上，以使系统高效可靠。以下介绍了最佳实践。</li>
+<li>优化索引结构：这可以通过调整块的大小、改变索引路径和合并图结构信息来实现。调整块（从小到大）的方法包括收集尽可能多的相关上下文并将噪声最小化。在构建RAG系统时，块大小是一个关键参数。有不同的评估框架来比较单个块的大小。LlamaIndex2使用GPT4来评估保真度和相关度，LLaMA[Touvron et al.，2023]索引具有针对不同分块方法的自动评估功能。跨多个索引路径查询的方法与以前的元数据过滤和分块方法密切相关，并且可能涉及同时跨不同索引进行查询。标准索引可用于查询特定查询，或者独立索引可用于基于元数据关键字进行搜索或筛选，例如特定的“日期”索引。<br>引入图结构包括将实体转换为节点，将它们的关系转换为关系。这可以通过利用节点之间的关系来提高准确性，尤其是对于多跳问题。使用图形数据索引可以增加检索的相关性。</li>
+<li>添加元数据信息：这里的重点是将引用的元数据嵌入到块中，例如用于筛选的日期和目的。添加参考文献的章节和小节等元数据也有利于改进检索。当我们将索引划分为多个块时，检索效率就成了一个问题。首先过滤元数据可以提高效率和相关性。</li>
+<li>对齐优化：此策略主要解决对齐问题和文档之间的差异。对齐概念包括引入假设问题，创建适合每个文档回答的问题，并用文档嵌入（或替换）这些问题。这有助于解决文档之间的对齐问题和差异。</li>
+<li>混合检索：这种策略的优势在于利用了不同检索技术的优势。智能地结合各种技术，包括基于关键字的搜索、语义搜索和矢量搜索，可以适应不同的查询类型和信息需求，确保对最相关和上下文丰富的信息进行一致检索。混合检索可以作为检索策略的有力补充，增强RAG管道的整体性能。<br><strong>Embedding</strong></li>
+</ol>
+<ul>
+<li>微调嵌入：微调嵌入模型直接影响RAG的有效性。微调的目的是增强检索到的内容和查询之间的相关性。微调嵌入的作用类似于在生成语音之前调整耳朵，优化检索内容对生成输出的影响。通常，用于微调嵌入的方法属于在特定领域上下文中调整嵌入和优化检索步骤的类别。特别是在处理进化术语或稀有术语的专业领域，这些定制的嵌入方法可以提高检索相关性。BGE[BAAI，2023]嵌入模型是一种精细调谐和高性能嵌入模型，如BAAI 3开发的BGE大型EN。为了创建用于微调BGE模型的训练数据，首先使用像gpt-3.5-turbo这样的LLM来基于文档块来制定问题，其中问题和答案（文档块）形成用于微调过程的微调对。</li>
+<li>动态嵌入：动态嵌入根据单词出现的上下文进行调整，不同于为每个单词使用单个向量的静态嵌入。例如，在像BERT这样的转换模型中，同一个单词可以根据周围的单词有不同的嵌入。有证据表明，在OpenAI的text-embeddingada-002模型4中，意外的高余弦相似性结果，尤其是在文本长度小于5个标记的情况下。理想情况下，嵌入应该包含尽可能多的上下文，以确保“健康”的结果。基于GPT等大型语言模型的原理，OpenAI的嵌入（da-02）比静态嵌入模型更复杂，可以捕捉一定级别的上下文。虽然它擅长上下文理解，但它对上下文的敏感性可能不如GPT4等最新的全尺寸语言模型。<br><strong>Post-Retrieval Process</strong><br>在从数据库中检索到有价值的上下文后，将其与查询合并以输入LLM会带来挑战。同时向LLM呈现所有相关文档可能会超过上下文窗口限制。将大量文档连接起来形成冗长的检索提示是无效的，这会引入噪声并阻碍LLM对关键信息的关注。为了解决这些问题，需要对检索到的内容进行额外的处理。</li>
+<li>重新排序：重新排序将最相关的信息重新定位到提示的边缘是一个简单的想法。这一概念已在LlamaIndex、LangChain和HayStack等框架中实现[Blagojevi，2023]。例如，Diversity Ranker根据文档多样性优先排序，而LostThereMiddleRanker则交替将最佳文档放置在上下文窗口的开头和结尾。同时，为了应对解释基于向量的模拟搜索以获得语义相似性的挑战，cohereAI rerank[Cohere，2023]、bgererank5或LongLLMLingua[Jiang et al.，2023a]等方法重新计算相关文本和查询之间的语义相似性。</li>
+<li>Prompt Compression Research表明，检索到的文档中的噪声会对RAG性能产生不利影响。在后处理中，重点在于压缩不相关的上下文，突出关键段落，减少整体上下文长度。选择性语境[Litman et al.，2020]和LLMLingua[Anderson et al.，2022]等方法利用小语言模型来计算即时相互信息或困惑，估计元素重要性。然而，这些方法可能会在RAG或长上下文场景中丢失关键信息。Recomp[Xu et al.，2023a]通过训练不同粒度的压缩器来解决这一问题。长上下文[Xu et al.，2023b]在处理广泛的上下文时进行分解和压缩，而“行走在记忆迷宫中”[Chen et al.，2021 3a]则设计了一个分层摘要树来增强LLM的关键信息感知。<br><strong>RAG Pipeline Optimization</strong><br>检索过程的优化旨在提高RAG系统的效率和信息质量。目前的研究主要集中在智能地结合各种搜索技术，优化检索步骤，引入认知回溯的概念，灵活应用各种查询策略，并利用嵌入相似性。这些努力共同努力实现RAG检索中上下文信息的效率和丰富性之间的平衡。</li>
+<li>探索混合搜索：通过智能地混合各种技术，如基于关键字的搜索、语义搜索和矢量搜索，RAG系统可以利用每种方法的优势。这种方法使RAG系统能够适应不同的查询类型和信息需求，确保一致检索最相关和上下文丰富的信息。混合搜索是对检索策略的有力补充，增强了RAG管道的整体性能。</li>
+<li>递归检索和查询引擎：RAG系统中优化检索的另一个强大方法涉及实现递归检索和复杂的查询引擎。递归检索需要在初始检索阶段获取较小的文档块，以获取关键的语义。在这个过程的后期阶段，具有更多上下文信息的较大块被提供给语言模型（LM）。这种两步检索方法有助于在效率和上下文丰富的响应之间取得平衡。</li>
+<li>逐步后退提示：逐步后退提示方法[Zheng et al.，2023]与RAG过程相结合，鼓励LLM从具体实例中后退，并对基本的一般概念或原则进行推理。实验结果表明，通过引入后向提示，在各种具有挑战性的推理密集型任务中，性能显著提高，显示了其对RAG的天然适应性。检索增强步骤既可以应用于生成向后提示的答案，也可以应用于最终的问答过程。</li>
+<li>子查询：在不同的场景中可以使用各种查询策略，包括使用LlamaIndex等框架提供的查询引擎、使用树查询、使用向量查询或使用最基本的块顺序查询。</li>
+<li>HyDE：这种方法基于这样一种假设，即生成的答案在嵌入空间中可能比直接查询更接近。利用LLM，HyDE生成一个假设文档（答案）来响应查询，嵌入文档，并使用这种嵌入来检索与假设文档类似的真实文档。与基于查询寻求嵌入相似性相比，该方法强调从答案到答案的嵌入相似性。然而，它可能不会始终产生有利的结果，特别是在语言模型不熟悉所讨论主题的情况下，这可能会导致更容易出错的实例的生成。<br><strong>Modular RAG</strong><br>模块化RAG结构打破了传统的Naive RAG索引、检索和生成框架，在整个过程中提供了更大的多样性和灵活性。一方面，它集成了各种方法来扩展功能模块，例如在相似性检索中加入搜索模块，并在检索器中应用微调方法[Lin et al.，2023]。此外，特定的问题导致了重组的RAG模块的出现[Yu et al.，2022]和迭代方法，如[Shao et al.，2033]。模块化RAG范式正在成为RAG领域的主流，允许跨多个模块的串行管道或端到端训练方法。三种RAG范式之间的比较如图3所示。<br><strong>New Modules</strong></li>
+<li>搜索模块：与Naive&#x2F;Advanced RAG中查询和语料库之间的相似性检索不同，该搜索模块针对特定场景量身定制，在过程中使用LLM生成的代码、查询语言（如SQL、Cypher）或其他自定义工具对（附加）语料库进行直接搜索。用于搜索的数据源可以包括搜索引擎、文本数据、表格数据或知识图[Wang et al.，2023c]。</li>
+<li>内存模块：利用LLM本身的内存能力来指导检索，其原理包括找到与当前输入最相似的内存。Self-mem[Cheng et al.，2023b]迭代地使用检索增强生成器来创建无界内存池，将“原始问题”和“双重问题”相结合。检索增强生成模型可以使用自己的输出来增强自己，使文本在推理过程中更接近数据分布，使用模型自己的输出，而不是训练数据[Wang et al.，2022a]。</li>
+<li>额外生成模块：在检索的内容中，冗余和噪声是常见的问题。额外生成模块不是直接从数据源检索，而是利用LLM生成所需的上下文[Yu et al.，2022]。与直接检索相比，LLM生成的内容更有可能包含相关信息。</li>
+<li>任务适应性模块：专注于转换RAG以适应各种下游任务，UPRISE[Cheng et al.，2023a]自动从预先构建的数据池中检索给定零样本任务输入的提示，增强了任务和模型的通用性。PROMPTAGATOR[Dai et al.，2022]利用LLM作为少数镜头查询生成器，并基于生成的数据创建特定任务的检索器。PROMPTAGATOR利用LLM的泛化能力，仅举几个例子就可以创建特定任务的端到端检索器。</li>
+<li>对齐模块：查询和文本之间的对齐一直是影响RAG有效性的关键问题。在模块化RAG时代，研究人员发现，在检索器中添加可训练的适配器模块可以有效缓解对齐问题。PRCA[Yang et al.，2023b]利用强化学习来训练由LLM奖励驱动的上下文适配器，该适配器位于检索器和生成器之间。它通过在标记的自回归策略中的强化学习阶段最大化奖励来优化检索到的信息。AAR[Yu et al.，2023b]提出了一种通用插件，该插件从已知源LLM中学习LM偏好，以帮助未知或未协同微调的LLM。RRR[Ma et al.，2023a]设计了一个基于强化学习的重写查询模块，以使查询与语料库中的文档对齐。</li>
+<li>验证模块：在现实世界中，并不总是保证检索到的信息是可靠的。检索不相关的数据可能会导致LLM中出现幻觉。因此，可以在检索文档之后引入额外的验证模块，以评估检索到的文档与查询之间的相关性。这增强了RAG的稳健性[Yu et al.，2023a]。<br><strong>New Pattern</strong><br>模块化RAG的组织方法是灵活的，允许根据特定的问题上下文替换或重新配置RAG过程中的模块。对于由检索和生成两个模块组成的Naive RAG（在一些文献中称为读取或合成），该框架提供了适应性和丰富性。目前的研究主要探讨两种组织范式，包括模块的添加或替换，以及模块之间组织流动的调整。</li>
+<li>Adding or Replacing Modules<br>添加或替换模块的策略需要维护检索读取的结构，同时引入额外的模块来增强特定功能。RRR[Ma等人，2023a]提出了重写检索-读取过程，利用LLM性能作为重写器模块强化学习的奖励。这允许重写器调整检索查询，从而提高读取器的下游任务性能。类似地，模块可以在生成读取[Yu et al.，2022]等方法中选择性地替换，其中LLM生成模块替换检索模块。背诵阅读[Sun et al.，2022]将外部检索转换为从模型权重的检索，最初让LLM记忆任务相关信息，并生成用于处理知识密集型自然语言处理任务的输出。</li>
+<li>Adjusting the Flow between Modules<br>在调整模块之间的流程方面，重点是增强语言模型和检索模型之间的交互。DSP[Hattab et al.，2022]引入了演示搜索预测框架，将上下文学习系统视为一个明确的程序，而不是一个终端任务提示，以解决知识密集型任务。ITER-RETGEN[Shao et al.，2023]利用生成的内容来指导检索，在Retrieve ReadRetrieve Read流中迭代执行“检索增强的生成”和“生成增强的检索”。Self-RAG[Asai et al.，2023b]遵循决策-检索-反映-读取过程，引入了一个用于主动判断的模块。这种自适应和多样化的方法允许在模块化RAG框架内动态组织模块。</li>
+</ul>
+<h2 id="Retriever"><a href="#Retriever" class="headerlink" title="Retriever"></a>Retriever</h2><p>在RAG的上下文中，“R”代表检索，在从庞大的知识库中检索前k个相关文档的RAG管道中发挥作用。然而，制作一只高质量的寻回犬是一项不平凡的任务。在本章中，我们围绕三个关键问题进行讨论：1）如何获得准确的语义表示？2） 如何匹配查询和文档的语义空间？3） 如何将检索器的输出与大型语言模型的首选项对齐？</p>
+<h3 id="如何获得准确的语义表示？"><a href="#如何获得准确的语义表示？" class="headerlink" title="如何获得准确的语义表示？"></a>如何获得准确的语义表示？</h3><p>在RAG中，语义空间是查询和文档映射的多维空间。当我们进行检索时，它是在语义空间内测量的。如果语义表达不准确，那么它对RAG的影响是致命的，本节将介绍两种方法来帮助我们构建准确的语义空间。<br><strong>Chunk optimization</strong><br>在处理外部文档时，第一步是分块以获得细粒度的特征。然后块被嵌入。然而，嵌入过大或过小的文本块可能不会获得良好的效果。因此，为语料库中的文档找到最佳块大小对于确保搜索结果的准确性和相关性至关重要。<br>在选择分块策略时，重要的考虑因素包括：被索引内容的特征、使用的嵌入模型及其最佳块大小、用户查询的预期长度和复杂性，以及检索结果在特定应用程序中的使用方式。例如，对于较长或较短的内容，应选择不同的分块模型。此外，不同的嵌入模型在不同的块大小下表现不同；例如，句子转换器更适合单句，而text-embedding-ada-002更适合包含256或512个标记的块。此外，用户输入问题文本的长度和复杂性，以及应用程序的特定需求，如语义搜索或问答，都会影响分块策略的选择。这可能与您选择的LLM的令牌限制直接相关，并可能需要您调整块大小。事实上，准确的查询结果是通过自适应地应用几种分块策略来实现的；没有最好的，只有最合适的。<br>目前对RAG的研究采用了多种块优化方法来提高检索效率和准确性。滑动窗口技术等技术通过多次检索聚合全局相关信息来实现分层检索。Small2big技术在搜索过程中使用小的文本块，并将较大的附属文本块提供给语言模型进行处理。摘要嵌入技术对文档摘要执行TopK检索，提供完整的文档上下文。元数据筛选技术利用文档元数据进行筛选。图形索引技术将实体和关系转换为节点和连接，显著增强了多跳问题的相关性。这些方法的融合提高了RAG的检索结果和性能。<br><strong>Fine-tuning Embedding Models</strong><br>在得到合适的块大小后，我们需要通过嵌入模型将块和查询嵌入到语义空间中，因此嵌入能否有效地表示语料库至关重要。如今，已经出现了优秀的嵌入模型，如[AUAE[AngIE，2023]，Voyage[VoyageAI，2023]、BGE[BAAI，2023]等]，它们已经在大规模语料库上进行了预训练，但当应用于特定领域时，它们可能无法准确地表示特定领域的语料库信息。此外，嵌入模型的任务特定微调对于确保模型理解与内容相关性相关的用户查询至关重要，而未微调的模型可能无法满足特定任务的需求。因此，微调嵌入模型对于下游应用至关重要。嵌入微调方法有两个基本范式.</p>
+<ol>
+<li>Domain Knowledge Fine-tuning<br>为了使嵌入模型正确地理解特定领域的信息，我们需要构建特定领域的数据集来微调嵌入模型。然而，微调嵌入模型与普通语言模型的不同之处主要在于所使用的数据集不同。在目前微调嵌入模型的主要方法中，使用的数据集由三部分组成，包括查询、语料库和相关文档。嵌入模型基于查询在语料库中查找相关文档，然后将查询的相关文档是否命中作为模型的度量。<br>在数据集的构建、模型的微调和评估中，这三个组成部分中的每一个都可能出现许多挑战。在LlamaIndex[Liu，2023]中，专门引入了一系列关键类和函数，用于嵌入模型的微调过程，大大简化了这一过程。通过准备一个领域知识语料库并利用它提供的方法，我们可以很容易地获得专门针对我们所需领域的嵌入模型。</li>
+<li>Fine-tuning of downstream tasks<br>使嵌入模型适应下游任务同样重要。当在下游任务中使用RAG时，一些工作通过使用LLM的功能对嵌入模型进行了微调。PROMPTAGATOR[Dai et al.，2022]利用大型语言模型（LLM）作为少量查询生成器，并基于生成的数据创建特定任务的检索器，缓解了由于数据稀缺而在某些领域难以实现的监督微调问题。LLM嵌入器[Zhang et al.，2023a]使用大型语言模型输出来自多个下游任务的数据的奖励值，通过数据集的硬标记和LLM得出的软奖励，用两个不同的监督信号微调检索器。这通过领域知识注入和下游任务微调在一定程度上改进了语义表示。然而，这种方法训练的检索器对大型语言模型没有直观的帮助，因此已经做了一些工作来直接通过LLM的反馈信号来监督嵌入模型的微调。（本节将在4.4中介绍）</li>
+</ol>
+<h3 id="如何匹配查询和文档的语义空间？"><a href="#如何匹配查询和文档的语义空间？" class="headerlink" title="如何匹配查询和文档的语义空间？"></a>如何匹配查询和文档的语义空间？</h3><p>在RAG应用程序中，一些检索器使用相同的嵌入模型对查询和文档进行编码，而另一些检索器则使用两个模型分别对查询和单据进行编码。此外，用户的原始查询可能存在表达不佳和缺乏语义信息的问题。因此，对齐用户查询和文档的语义空间是非常必要的。本节介绍了实现这一目标的两项关键技术。<br><strong>Query Rewrite</strong><br>调整查询和文档语义的最直观方法是重写查询。如Query2Doc[Wang et al.，2023b]和ITERRETGEN[Shao et al.，2021 3]中所述，利用大型语言模型的固有能力，通过引导生成伪文档，然后将原始查询与该伪文档合并，形成新的查询。在HyDE[Gao et al.，2022]中，通过使用文本指示符来建立查询向量，使用这些指示符来生成相关但可能并不真实存在的“假设”文档，它只需要捕获相关模式。RRR[Ma et al.，2023a]引入了一种新的框架，该框架颠倒了检索和阅读的顺序，重点关注查询重写。该方法使用大型语言模型生成查询，然后使用web搜索引擎检索上下文，最后使用小型语言模型作为训练重写器来为冻结的大型语言模型提供服务。STEP-BACKPROMPING[Zheng et al.，2023]方法可以使大型语言模型进行抽象推理，提取高级概念和原理，并在此基础上进行检索。最后，多查询检索中的方法包括使用大型语言模型生成多个搜索查询，这些查询可以并行执行，检索结果一起输入，这对于依赖于多个子问题的单个问题非常有用。<br><strong>Embedding Transformation</strong><br>如果有像重写查询这样的粗粒度方法，那么也应该有专门用于嵌入操作的细粒度实现。在LlamaIndex[Liu，2023]中，可以在查询编码器之后连接适配器，并微调适配器以优化查询嵌入的表示，将其映射到更适合特定任务的潜在空间。当查询和外部文档的数据结构不同时，例如非结构化查询和结构化外部文档，使查询与文档对齐是非常重要的。SANTA[Li et al.，2023d]提出了两种预训练方法，以使检索者意识到结构化信息1）利用结构化数据和非结构化数据之间的自然对齐关系进行对比学习，进行结构化意识预训练。2） 掩码实体预测，它设计了一个面向实体的掩码策略，并要求语言模型填充掩码实体。</p>
+<h3 id="如何调整检索器的输出和LLM的偏好？"><a href="#如何调整检索器的输出和LLM的偏好？" class="headerlink" title="如何调整检索器的输出和LLM的偏好？"></a>如何调整检索器的输出和LLM的偏好？</h3><p>在RAG管道中，即使我们采用上述技术来提高检索命中率，也可能无法提高RAG的最终效果，因为检索到的文档可能不是LLM所需要的。因此，本节介绍了两种方法来调整检索器的输出和LLM的偏好。<br><strong>LLM supervised training</strong><br>许多作品利用来自大型语言模型的各种反馈信号来微调嵌入模型。AAR[Yu等人，2023b]通过编码器-编码器架构LM为预先训练的检索器提供监督信号。通过FiD交叉注意力得分确定LM的首选文档，然后使用硬负采样和标准交叉熵损失对检索器进行微调。最终，微调寻回器可以直接用于增强看不见的目标LM，从而在目标任务中表现更好。检索器的训练损失为：<br>–Fomula 1–<br>其中D^(a^+)是LLM在检索集中首选的文档，Da−不是首选。l是标准的交叉熵损失。最后，有人建议LLM可能更喜欢关注可读文档，而不是信息丰富的文档。<br>REPLUG[Shi et al.，2023]使用检索器和LLM来计算检索到的文档的概率分布，然后通过计算KL散度来执行监督训练。这种简单有效的训练方法通过使用LM作为监督信号来增强检索模型的性能，消除了对任何特定交叉注意力机制的需要。寻回器的训练损失如下：<br>–Fomula 2–<br>其中，D是一组输入上下文，P_R是检索似然性，Q_(LM)是每个文档的LM似然性。<br>UPRISE[Cheng et al.，2023a]还使用冻结的大型语言模型来微调提示检索器。但语言模型和检索器都以提示输入对作为输入，然后使用大语言模型给出的分数来监督检索器的训练，相当于使用大语言模式来标记数据集。Atlas[Izacard et al.，2022]提出了四种微调监督嵌入模型的方法，其中，注意力蒸馏使用语言模型在输出过程中生成的交叉注意力分数进行提取。EMDR2采用期望最大化算法以检索到的文档作为潜在变量进行训练。困惑蒸馏直接使用模型生成的令牌的困惑作为指标进行训练。LOOP基于文档删除对LM预测的影响，引入了一种新的损失函数，为模型更好地适应特定任务提供了一种有效的训练策略。<br><strong>Plug in an adapter</strong><br>然而，由于诸如利用API来实现嵌入功能或本地计算资源不足之类的因素，微调嵌入模型可能是具有挑战性的。因此，有些作品选择外部连接适配器进行对齐。PRCA[Yang et al.，2023b]通过上下文提取阶段和奖励驱动阶段训练适配器，并基于基于令牌的自回归策略优化检索器的输出。令牌过滤[Berchansky et al.，2023]方法计算交叉注意力得分，选择得分最高的输入令牌来有效过滤令牌。RECOMP[Xu et al.，2023a]提出了抽取式和生成式压缩器，通过选择相关句子或合成文档信息来生成摘要，以实现多文档查询焦点摘要。除此之外，一种新的方法PKG[Luo et al.，2023]通过指令微调将知识注入白盒模型，并直接替换检索器模块，该模块用于基于查询直接输出相关文档。</p>
+<h2 id="Generator"><a href="#Generator" class="headerlink" title="Generator"></a>Generator</h2><p>RAG的另一个核心组件是生成器，负责将检索到的信息转换为自然流畅的文本。它的设计灵感来自传统的语言模型，但与传统的生成模型相比，RAG的生成器通过利用检索到的信息来提高准确性和相关性。在RAG中，生成器的输入不仅包括传统的上下文信息，还包括通过检索器获得的相关文本片段。这使生成器能够更好地理解问题背后的背景，并产生信息更丰富的回答。此外，生成器以检索到的文本为指导，以确保生成的内容和检索到的信息之间的一致性。正是输入数据的多样性导致了生成阶段的一系列有针对性的工作，所有这些工作都旨在使大型模型更好地适应查询和文档中的输入数据。我们将通过检索后处理和微调等方面深入研究生成器的介绍。</p>
+<h3 id="How-Can-Retrieval-Results-be-Enhanced-via-Post-retrieval-Processing"><a href="#How-Can-Retrieval-Results-be-Enhanced-via-Post-retrieval-Processing" class="headerlink" title="How Can Retrieval Results be Enhanced via Post-retrieval Processing?"></a>How Can Retrieval Results be Enhanced via Post-retrieval Processing?</h3><p>就未经编辑的大型语言模型而言，大多数研究都依赖于公认的大型语言模式，如GPT4[OpenAI，2023]，以利用其强大的内部知识来全面检索文档知识。然而，这些大型模型的固有问题，如上下文长度限制和对冗余信息的脆弱性，仍然存在。为了缓解这些问题，一些研究在检索后处理方面做出了努力。检索后处理是指对检索器从大型文档数据库中检索到的相关信息进行进一步处理、过滤或优化的过程。其主要目的是提高检索结果的质量，以更好地满足用户需求或后续任务。它可以被理解为对检索阶段获得的文档进行再处理的过程。检索后处理的操作通常包括信息压缩和结果重新存储。<br><strong>Information Compression</strong><br>尽管检索器可以从庞大的知识库中获取相关信息，但我们仍然面临着处理检索文档中大量信息的挑战。现有的一些研究试图通过增加大型语言模型的上下文长度来解决这一问题，但目前的大型语言模型仍然面临上下文限制。因此，在某些情况下，信息浓缩是必要的。简言之，信息浓缩的重要性主要体现在以下几个方面：减少噪声、应对上下文长度限制和增强生成效果。<br>PRCA[Yang等人，2023b]通过训练信息提取器来解决这个问题。在上下文提取阶段，给定输入文本Sinput，它可以生成输出序列Cextracted，该输出序列表示输入文档中的压缩上下文。训练过程的目标是尽可能减少Cextracted和实际上下文Ctruth之间的差异。他们采用的损失函数如下：<br>–Fomula 3–<br>其中f是信息提取器，θ是提取器的参数。RECOMP[Xu et al.，2023a]类似地通过利用对比学习来训练信息冷凝器。对于每个训练数据点，存在一个正样本和五个负样本。在此过程中，编码器使用对比损失进行训练[Carpukhin et al.，2020]。具体优化目标如下：<br>–Fomula 4–<br>其中，xi是训练数据，pi是正样本，nj是负样本，sim（x，y）是计算x和y之间的相似性。另一项研究选择进一步精简文档数量，旨在通过减少检索到的文档数量来提高模型的答案准确性。[Ma et al.，2023b]提出了“Filter Ranker”范式，该范式融合了大型语言模型（LLM）和小型语言模型（SLM）的优势。在这个范例中，SLM充当过滤器，而LLM充当重新排序代理。通过促使LLM重新排列SLM识别的困难样本的部分，研究结果表明，在各种信息提取（IE）任务中都有显著改进。<br><strong>Rerank</strong><br>重新排序模型的关键作用在于优化从检索器检索到的文档集。当添加额外的上下文时，LLM的性能会随着回溯性能而下降，而重新排序提供了解决此问题的有效解决方案。核心思想包括重新排列文档记录，将最相关的项目放在顶部，从而将文档总数减少到固定数量。这不仅解决了检索过程中可能遇到的上下文窗口扩展问题，而且有助于提高检索效率和响应能力[Zhuang et al.，2023]。<br>引入上下文压缩作为重新排序的一部分，旨在仅基于给定的查询上下文返回相关信息。这种方法的双重意义在于，通过减少单个文档的内容和过滤整个文档，集中显示检索结果中最相关的信息。因此，重新排序模型在整个信息检索过程中发挥着优化和细化的作用，为后续的LLM处理提供了更有效、更准确的输入。</p>
+<h3 id="How-to-Optimize-a-Generator-to-Adapt-Input-Data"><a href="#How-to-Optimize-a-Generator-to-Adapt-Input-Data" class="headerlink" title="How to Optimize a Generator to Adapt Input Data?"></a>How to Optimize a Generator to Adapt Input Data?</h3><p>在RAG模型中，发电机的优化是架构的关键组成部分。生成器的任务是获取检索到的信息并生成相关文本，从而提供模型的最终输出。优化生成器的目标是确保生成的文本既自然又有效地利用检索到的文档，从而更好地满足用户的查询需求.<br>在典型的大型语言模型（LLM）生成任务中，输入通常是一个查询。在RAG中，主要区别在于输入不仅包括查询，还包括检索器检索的各种文档（结构化&#x2F;非结构化）。额外信息的引入可能会对模型的理解产生重大影响，尤其是对于较小的模型。在这种情况下，对模型进行微调以适应查询检索到的文档的输入变得尤为重要。具体来说，在向微调模型提供输入之前，通常会对检索器检索到的文档进行检索后处理。需要注意的是，RAG中微调发电机的方法基本上类似于LLM的一般微调方法。在这里，我们将简要介绍一些具有代表性的工作，包括数据（格式化&#x2F;未格式化）和优化功能。<br><strong>General Optimization Process</strong><br>指包含成对（输入，输出）的训练数据，旨在训练模型在给定输入x的情况下生成输出y的能力。在Self-mem的工作中[Cheng et al.，2023b]，采用了相对经典的训练过程。给定输入x，检索相关文档z（在论文中选择Top-1），在对（x，z）进行积分后，模型生成输出y。论文利用了两种常见的微调范式，即联合编码器[Arora等人，2023，Wang等人，2022b，Lewis等人，2020]和双编码器[Sia等人，2019，Cai等人，2021，Cheng等人，2022]。对于联合编码器，使用基于编码器-解码器的标准模型，其中编码器最初对输入进行编码，解码器通过注意力机制将编码结果组合起来，以自回归方式生成令牌：<br>–Fomula 5–<br>–Fomula 6–<br>–Fomula 7–<br>对于双编码器，系统建立了两个独立的编码器，每个编码器分别负责对输入（查询、上下文）和文档进行编码。然后，解码器按顺序对输出进行双向交叉关注处理。作者选择使用变压器[Vaswani et al.，2017]作为两种架构的构建块，并优化Gξ负对数似然（NLL）损失。<br>–Fomula 8–<br>–Fomula 9–<br>–Fomula 10–<br><strong>Utilizing Contrastive Learning</strong><br>在准备训练数据的阶段，通常生成输入和输出之间的成对交互。在这种情况下，模型只能访问唯一的真实输出，这可能会引发“暴露偏差”问题[Ranzato et al.，2015]：在训练阶段，模型只暴露于单个真实反馈，而不访问任何其他生成的令牌。这可能会损害模型在应用中的性能，因为它可能过于适合训练数据中的特定反馈，而不会有效地推广到其他场景。因此，SURGE提出了一种图文对比学习方法[Cang et al.，2023]。对于输入和输出之间的任何一对给定的交互，这种对比学习方法的目标可以定义如下：<br>–Fomula 11–<br>其中ζ，ξ是可学习的线性投影层。z是来自编码器的图的平均表示，h是解码器表示的平均值。z′，h′分别表示相应的负样本。在给定的文本中，“h”和“z”表示负样本。通过引入对比学习目标，该模型可以更好地学习生成多样化和合理的回答，而不仅仅是训练数据中的回答。这有助于降低过拟合的风险，并提高模型在真实世界场景中的泛化能力。<br>在处理涉及结构化数据的检索任务时，SANTA[Li et al.，2023d]的工作利用三阶段训练过程来充分理解结构和语义信息。具体而言，在检索器的训练阶段，采用了对比学习，主要目标是优化查询和文档的嵌入表示。具体优化目标如下：<br>–Fomula 12–<br>其中q和d是编码器编码的查询和文档。d−、d分别表示负样本和正样本。在生成器的初始训练阶段，我们利用对比学习来对齐结构化数据和非结构化数据的相应文档描述。优化目标如上所述。<br>此外，在生成器的后期训练阶段，受参考文献[Sciavolino et al.，2021，Zhang et al.，2019]的启发，我们认识到实体语义在学习检索中的文本数据表示方面的显著有效性。因此，我们首先在结构化数据中执行实体识别，随后将掩码应用于生成器的训练数据的输入部分中的实体，使生成器能够预测这些掩码。此后的优化目标是：<br>–Fomula 13–<br>其中Yd（yj表示序列Yd中的第j个令牌。Yd&#x3D;<mask>1，ent1，…，<mask>n，entn表示包含掩码实体的地面实况序列。在整个训练过程中，我们通过从上下文中获取必要的信息来恢复屏蔽的实体，理解文本数据的结构语义，并对齐结构化数据中的相关实体。我们优化了语言模型，以填充隐藏的跨度，并更好地理解实体语义[Ye et al.，2020]。</p>
+<h2 id="Augmentation-in-RAG"><a href="#Augmentation-in-RAG" class="headerlink" title="Augmentation in RAG"></a>Augmentation in RAG</h2><p>本章主要分为三个维度：扩充阶段、扩充数据源和扩充过程，详细阐述RAG开发中的关键技术。RAG核心组件的分类如图4所示。</p>
+<h3 id="RAG-in-Augmentation-Stages"><a href="#RAG-in-Augmentation-Stages" class="headerlink" title="RAG in Augmentation Stages"></a>RAG in Augmentation Stages</h3><p>作为一项知识密集型任务，RAG在语言模型训练的预训练、微调和推理阶段采用了不同的技术方法。<br><strong>Pre-training Stage</strong><br>自从预训练模型出现以来，研究人员一直致力于通过预训练阶段的检索方法来提高预训练语言模型在开放领域问答（QA）中的性能。在预先训练的模型中识别和扩展隐含知识可能具有挑战性。REALM[Arora等人，2023]引入了一种更模块化和可解释的知识嵌入方法。遵循掩蔽语言模型（MLM）范式，REALM将预训练和微调建模为一个先检索后预测的过程，其中语言模型通过基于掩蔽句子x预测掩蔽标记y来进行预训练，并对P（x|y）进行建模。<br>RETRO[Borgeaud等人，2022]利用检索增强对自回归语言模型进行预训练，通过从大量标记数据中检索并显著减少模型参数，实现从头开始的大规模预训练。RETRO与GPT模型共享主干结构，并引入了一个额外的RETRO编码器来对从外部知识库检索到的相邻实体的特征进行编码。此外，RETRO在其解码器转换器结构中结合了逐块交叉注意层，以有效地集成来自RETRO编码器的检索信息。RETRO实现了比标准GPT模型更低的困惑。此外，它通过更新检索数据库在更新存储在语言模型中的知识方面提供了灵活性，而无需重新训练语言模型[Petroni et al.，2019]。<br>Atla[Izacard等人，2022]采用了类似的方法，在预训练和微调阶段都采用了使用T5架构[Raffel等人，2020]的检索机制。在预训练之前，它用预训练的T5初始化编码器-解码器LM主干，并用预训练过的Contriever初始化密集检索器。在预训练过程中，它每1000步刷新一次异步索引。<br>COG[Vaze et al.，2021]是一种文本生成模型，通过从现有的文本集合中逐步复制文本片段（如单词或短语）来形式化其生成过程。与按顺序选择单词的传统文本生成模型不同，COG利用高效的矢量搜索工具来计算文本片段的有意义的上下文表示并对其进行索引。因此，文本生成任务被分解为一系列复制和粘贴操作，其中在每个时间步骤，从文本集合中寻找相关的文本片段，而不是从独立的词汇中进行选择。COG在各个方面都表现出优于RETRO的性能，包括问题回答、领域自适应和扩展短语索引。<br>另一方面，随着标度定律的发现，模型参数迅速增加，使自回归模型成为主流。研究人员还在探索是否可以使用RAG方法对更大的模型进行预训练。RETRO[Wang et al.，2023a]是RETRO的扩展，增加了模型的参数规模。研究发现，文本生成质量、事实准确性、低毒性和下游任务准确性都得到了持续的提高，尤其是在知识密集型任务（如开放领域问答）中。这些研究结果突出了预训练自回归语言模型以及检索未来基础模型的前景。<br>总之，强化预训练的优势和局限性是显而易见的。从积极的方面来看，这种方法提供了一个更强大的基础模型，在困惑、文本生成质量和下游任务性能方面优于标准GPT模型。此外，与纯预训练的模型相比，它通过使用更少的参数来实现更高的效率。它特别擅长处理知识密集型任务，允许通过对特定领域语料库的训练来创建特定领域的模型。然而，也存在缺点，包括需要大量的预训练数据和更大的训练资源，以及更新速度较慢的问题。特别是随着模型大小的增加，检索增强训练的成本变得相对较高。尽管存在这些局限性，但该方法在模型鲁棒性方面表现出显著的特点。经过训练后，基于纯预训练的检索增强模型消除了对外部库依赖性的需求，提高了生成速度和操作效率。<br><strong>Fine-tuning Stage</strong><br>在下游微调阶段，研究人员采用了各种方法来微调检索器和生成器，以改进信息检索，主要是在开放域问答任务中。关于检索器微调，REPlUG[Shi et al.，2023]将语言模型（LM）视为黑匣子，并通过可调整的检索模型对其进行增强。REPLUG通过监督信号从黑匣子语言模型中获得反馈，改进了初始检索模型。另一方面，UPRISE[Cheng et al.，2023a]通过对不同任务集进行微调，创建一个轻量级和通用的检索器，从而对检索器进行微调。该检索器可以自动为零样本任务提供检索提示，展示其在任务和模型中的通用性和改进的性能。<br>同时，微调生成器的方法包括Self-Mem[Cheng等人，2023b]，其通过示例的存储池来微调生成器，以及Self-RAG[Asai等人，2023b，其通过生成反射令牌来满足主动检索需求。RADIT[Lin et al.，2023]方法通过在给定检索增强指令的情况下最大化更正swers的概率来微调生成器和检索器。它更新生成器和检索器，以最大限度地减少文档和查询之间的语义相似性，有效地利用相关的背景知识.<br>此外，SUGRE[Cang et al.，2023]引入了对比学习的概念。它对检索器和生成器进行端到端的微调，确保高度详细的文本生成和检索的子图。SURGE使用基于图神经网络（GNN）的上下文感知子图检索器，从与正在进行的对话相对应的知识图中提取相关知识。这样可以确保生成的响应忠实地反映检索到的知识。为此，SURGE采用了一种不变但高效的图编码器和图-文本对比学习目标。<br>总之，在微调阶段的增强方法表现出几个特点。首先，微调LLM和检索器可以更好地适应特定任务，提供同时微调一个或两个的灵活性，如RePlug[Shi等人，2023]和RA-DIT[Lin等人，2023].等方法所示。其次，这种微调的好处扩展到适应不同的下游任务，如UPRISE[Cheng et al.，2023a]所示，使模型更加通用。此外，微调使模型能够更好地适应各种语料库中的不同数据结构，特别有利于图结构语料库，如SUGRE方法所强调的那样.<br>然而，这一阶段的微调也有局限性，例如需要专门为RAG微调准备的数据集，以及与推理阶段的RAG相比需要大量的计算资源。总的来说，在微调过程中，研究人员可以根据特定的需求和数据格式灵活地定制模型，与预训练阶段相比，减少了资源消耗，同时保留了调整模型输出风格的能力。<br><strong>Inference Stage</strong><br>将RAG方法与LLM相结合已成为推理阶段的一个流行研究方向。值得注意的是，Naive RAG的研究范式依赖于在推理阶段结合检索内容。<br>为了克服Naive RAG的局限性，研究人员在推理阶段在RAG中引入了更丰富的上下文。DSP[Hattab et al.，2022]框架依赖于一个复杂的管道，该管道涉及在冻结的语言模型（LM）和检索模型（RM）之间传递自然语言文本，为模型提供更多信息上下文以提高生成质量。PKG为LLM配备了一个知识引导模块，该模块允许在不改变LLM参数的情况下访问相关知识，使模型能够执行更复杂的任务。此外，CREA-ICL[Li et al.，2023b]利用跨语言知识的同步检索来帮助获取额外信息，而RECITE通过从LLM中采样一个或多个段落来形成上下文。<br>在推理阶段，优化RAG过程有利于适应更具挑战性的任务。例如，ITRG[Feng et al.，2023a]通过迭代检索和搜索正确的推理路径，增强了对需要多步推理的任务的适应性。ITERRETGEN[Shao et al.，2023]采用迭代方法将检索和生成结合起来，实现了“检索增强生成”和“生成增强检索”的交替过程.<br>另一方面，IRCOT[Trivedi et al.，2022]融合了RAG和CoT[Wei et al.，2022]的概念，采用了交替的CoT引导检索，并使用检索结果来改进CoT。这种方法显著提高了GPT-3在各种QA任务中的性能，突出了集成检索和生成的潜在优势。<br>总之，推理阶段增强方法具有重量轻、成本效益高、不需要额外训练以及利用强大的预训练模型的优点。主要优势在于在微调过程中冻结LLM的参数，专注于提供更适合需求的上下文，具有快速和低成本的特点。然而，这种方法也有一些局限性，包括需要额外的数据处理和流程优化，同时受到基础模型能力的限制。通常，这种方法通常与过程优化技术相结合，如逐步推理、迭代推理和自适应检索，以更好地满足不同任务的要求。</p>
+<h3 id="Augmentation-Data-Source"><a href="#Augmentation-Data-Source" class="headerlink" title="Augmentation Data Source"></a>Augmentation Data Source</h3><p>数据来源是RAG有效性的关键因素。各种数据源提供了不同的知识粒度和维度，需要不同的处理方法。它们主要分为三类：非结构化数据、结构化数据和LLM生成的内容。<br><strong>Augmented with Unstructured Data</strong><br>非结构化数据主要包括文本数据，通常源自纯文本语料库。此外，其他文本数据可以作为检索源，例如用于大型模型微调的提示数据[Cheng等人，2023a]和跨语言数据[Li等人，2023b]。<br>就文本粒度而言，除了常见的组块（包括句子）之外，检索单元可以是标记（例如，kNN-LM[Handelwal等人，2019]）、短语（例如，NPM[Lee等人，2020]、COG[Vaze等人，2021]）和文档段落。细粒度的检索单元通常可以更好地处理罕见模式和域外场景，但会增加检索成本。<br>在单词级别，FLARE采用主动检索策略，仅当LM生成低概率单词时才进行检索。该方法包括生成用于检索相关文档的临时下一句，然后在检索到的文档的条件下重新生成下一句以预测后续语句。<br>在组块级别，RETRO使用前一个组块来检索最近的相邻组块，并将该信息与前一组块的上下文信息集成，以指导下一组块生成。RETRO通过从检索数据库中检索最近的相邻块N（Ci−1）来实现这一点，然后通过交叉关注融合前一个块（C1，…，Ci−2）的上下文信息和N的检索信息，以指导下一个块Ci的生成。为了保持因果关系，第i个块Ci的自回归生成只能使用前一个块N（Ci-1）的最近邻居，而不能使用N（Ci）。<br><strong>Augmented with Structured Data</strong><br>像知识图（KG）这样的结构化数据源逐渐被整合到RAG的范式中。经过验证的KGs可以提供更高质量的上下文，降低模型幻觉的可能性。<br>RET-LLM[Modarressi等人，2023]通过从过去的对话中提取关系三元组来构建个性化的知识图记忆，以供将来使用。SUGRE[Cang et al.，2023]使用图神经网络（GNN）嵌入从知识图中检索的相关子图，以防止模型生成与上下文无关的回复。SUGRE[Cang et al.，2023]采用了一种图编码方法，该方法将图结构反映到PTM的表示空间中，并利用图文本模式之间的多模式对比学习目标来确保检索到的事实和生成的文本之间的一致性。KnowledgeGPT[Wang et al.，2023c]以代码格式生成知识库（KB）的搜索查询，并包括预定义的KB操作函数。除了检索，KnowledgeGPT还提供了将知识存储在个性化知识库中以满足个人用户需求的功能。这些结构化数据源为RAG提供了更丰富的知识和上下文，有助于提高模型性能。<br><strong>LLM Generated Content RAG</strong><br>鉴于RAG回忆的辅助信息并不总是有效的，甚至可能产生负面影响，一些研究通过深入研究LLM的内部知识来扩展RAG的范式。这种方法利用LLM本身生成的内容进行检索，旨在提高下游任务的性能。以下概述了这一类别中值得注意的研究：<br>SKR[Wang et al.，2023d]采用了一个标记的训练集，将模型可以直接回答的问题归类为已知问题，将需要增强检索功能的问题分类为未知问题。该模型被训练来辨别一个问题是否已知，只对被识别为未知的输入应用检索增强，同时直接回答其余的输入。<br>GenRead[Yu et al.，2022]用LLM生成器代替检索器。实验结果表明，生成的上下文文档包含正确答案的情况比Naive RAG检索到的情况更普遍。生成的答案也显示出卓越的质量。作者将此归因于生成文档级上下文的任务与因果语言建模的预训练目标之间的一致性，从而更好地利用存储在模型参数中的世界知识。<br>Selfmem[Cheng et al.，2023b]迭代使用检索增强生成器来创建无边界内存池。内存选择器用于选择一个输出作为下一代的内存。此输出充当原始问题的双重问题。通过将原始问题和双重问题相结合，检索增强生成模型可以利用其自身的输出来增强自身。<br>这些不同的方法展示了RAG检索增强的创新策略，旨在提高模型的性能和有效性。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/RAG/" rel="tag"># RAG</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/PDFTriage-Question%20Answering%20over%20Long,%20Structured%20Documents/" rel="next" title="PDFTriage-Question Answering over Long, Structured Documents">
+                <i class="fa fa-chevron-left"></i> PDFTriage-Question Answering over Long, Structured Documents
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Python%E7%9A%84PDF%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7/" rel="prev" title="Python的PDF解析工具">
+                Python的PDF解析工具 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">77</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Abstarct"><span class="nav-number">1.</span> <span class="nav-text">Abstarct</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Background"><span class="nav-number">3.</span> <span class="nav-text">Background</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Definition"><span class="nav-number">3.1.</span> <span class="nav-text">Definition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RAG-vs-Fine-tuning"><span class="nav-number">3.2.</span> <span class="nav-text">RAG vs Fine-tuning</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RAG-Framework"><span class="nav-number">4.</span> <span class="nav-text">RAG Framework</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Naive-RAG"><span class="nav-number">4.1.</span> <span class="nav-text">Naive RAG</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Advanced-RAG"><span class="nav-number">4.2.</span> <span class="nav-text">Advanced RAG</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Retriever"><span class="nav-number">5.</span> <span class="nav-text">Retriever</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%BE%97%E5%87%86%E7%A1%AE%E7%9A%84%E8%AF%AD%E4%B9%89%E8%A1%A8%E7%A4%BA%EF%BC%9F"><span class="nav-number">5.1.</span> <span class="nav-text">如何获得准确的语义表示？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%8C%B9%E9%85%8D%E6%9F%A5%E8%AF%A2%E5%92%8C%E6%96%87%E6%A1%A3%E7%9A%84%E8%AF%AD%E4%B9%89%E7%A9%BA%E9%97%B4%EF%BC%9F"><span class="nav-number">5.2.</span> <span class="nav-text">如何匹配查询和文档的语义空间？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%B0%83%E6%95%B4%E6%A3%80%E7%B4%A2%E5%99%A8%E7%9A%84%E8%BE%93%E5%87%BA%E5%92%8CLLM%E7%9A%84%E5%81%8F%E5%A5%BD%EF%BC%9F"><span class="nav-number">5.3.</span> <span class="nav-text">如何调整检索器的输出和LLM的偏好？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Generator"><span class="nav-number">6.</span> <span class="nav-text">Generator</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Can-Retrieval-Results-be-Enhanced-via-Post-retrieval-Processing"><span class="nav-number">6.1.</span> <span class="nav-text">How Can Retrieval Results be Enhanced via Post-retrieval Processing?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-to-Optimize-a-Generator-to-Adapt-Input-Data"><span class="nav-number">6.2.</span> <span class="nav-text">How to Optimize a Generator to Adapt Input Data?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Augmentation-in-RAG"><span class="nav-number">7.</span> <span class="nav-text">Augmentation in RAG</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RAG-in-Augmentation-Stages"><span class="nav-number">7.1.</span> <span class="nav-text">RAG in Augmentation Stages</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Augmentation-Data-Source"><span class="nav-number">7.2.</span> <span class="nav-text">Augmentation Data Source</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Antique</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://Antique.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://antiqueeeee.github.io/Retrieval-Augmented%20Generation%20for%20Large%20Language%20Models%20A%20Survey/';
+          this.page.identifier = 'Retrieval-Augmented Generation for Large Language Models A Survey/';
+          this.page.title = 'Retrieval-Augmented Generation for Large Language Models A Survey';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://Antique.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
